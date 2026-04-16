@@ -1,0 +1,46 @@
+services:
+  # The Laravel API
+  api:
+    build:
+      context: .
+      dockerfile: docker/php.Dockerfile
+    container_name: laravel_api
+    volumes:
+      - ./backend:/var/www
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      REDIS_HOST: redis
+    depends_on:
+      - db
+      - redis
+
+  # The Angular App
+  web:
+    build:
+      context: .
+      dockerfile: docker/ng.Dockerfile
+    container_name: angular_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+  # The Database
+  db:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: plateform_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # The Cache Engine
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
+
+volumes:
+  postgres_data:
