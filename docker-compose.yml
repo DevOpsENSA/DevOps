@@ -1,12 +1,35 @@
 services:
-db:
-  image: postgres:16
-  environment:
-  POSTGRES_DB : platformEtudiant
-  POSTGRES_USER : admin
-  POSTGRES_PASSWORD : $(DB_PASSWORD_LINUX)
-  volumes:
-  - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-  - pgdata:/var/lib/postgres/data
-  ports:
-  - 5432:5432
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: plateformEtudiant
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgres/data
+    ports:
+      - 5433:5432
+  backend:
+    build: ./backend 
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: plateformEtudiant
+      DB_USER: admin
+      DB_PASSWORD: ${DB_PASSWORD}
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+
+volumes:
+  pgdata:
+
