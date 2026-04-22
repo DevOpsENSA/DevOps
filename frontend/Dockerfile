@@ -13,7 +13,7 @@ FROM nginx:alpine
 
 RUN rm -rf /usr/share/nginx/html/* 
 
-COPY --from=build /frontend/dist/plateformeEtudiant /usr/share/nginx/html/
+COPY --from=build /frontend/dist/platform/browser /usr/share/nginx/html/
 
 EXPOSE 80
 
