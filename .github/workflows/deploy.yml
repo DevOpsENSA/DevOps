@@ -41,8 +41,8 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ./terraform
+        working-directory: terraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -var="db_password=admin123"
-        working-directory: ./terraform
+        working-directory: terraform
