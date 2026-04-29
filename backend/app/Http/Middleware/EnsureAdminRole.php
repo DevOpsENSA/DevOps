@@ -19,7 +19,7 @@ class EnsureAdminRole
 
         if (! $compte) {
             return response()->json([
-                'message' => 'Only admin can upload lessons. Send X-User-Mail of an admin account.',
+                'message' => 'Action réservée aux administrateurs.',
             ], Response::HTTP_FORBIDDEN);
         }
 
