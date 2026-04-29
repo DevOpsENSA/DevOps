@@ -98,10 +98,16 @@ async function register(e) {
   try {
     const res = await fetch(`${API_BASE}/auth/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
       body: JSON.stringify({ nom, prenom, mail: email, password }),
     });
-    const payload = await res.json();
+    const raw = await res.text();
+    let payload = {};
+    try { payload = raw ? JSON.parse(raw) : {}; } catch { payload = {}; }
     if (!res.ok) {
       toastError(payload.message || "Erreur lors de l'inscription.");
       return;
@@ -126,10 +132,16 @@ async function login(e) {
   try {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
       body: JSON.stringify({ mail: email, password }),
     });
-    const payload = await res.json();
+    const raw = await res.text();
+    let payload = {};
+    try { payload = raw ? JSON.parse(raw) : {}; } catch { payload = {}; }
     if (!res.ok) {
       toastError(payload.message || "Email ou mot de passe incorrect.");
       return;
