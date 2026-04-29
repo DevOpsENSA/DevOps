@@ -14,12 +14,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('admins', function (Blueprint $table) {
-            $table->id('idAdmin');
-            $table->string('name')->default('Admin');
-            $table->timestamps();
-        });
-
         Schema::create('filieres', function (Blueprint $table) {
             $table->id('idFiliere');
             $table->string('nomFiliere');
@@ -35,20 +29,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('idEcole')->references('idEcole')->on('ecoles')->cascadeOnDelete();
-        });
-
-        Schema::create('cours', function (Blueprint $table) {
-            $table->id('idCours');
-            $table->string('name');
-            $table->unsignedBigInteger('idAdmin');
-            $table->unsignedBigInteger('idFiliere');
-            $table->unsignedBigInteger('idSemestre');
-            $table->string('file_path');
-            $table->timestamps();
-
-            $table->foreign('idAdmin')->references('idAdmin')->on('admins')->cascadeOnDelete();
-            $table->foreign('idFiliere')->references('idFiliere')->on('filieres')->cascadeOnDelete();
-            $table->foreign('idSemestre')->references('idSemestre')->on('semestres')->cascadeOnDelete();
         });
 
         Schema::create('etudiants', function (Blueprint $table) {
@@ -67,6 +47,22 @@ return new class extends Migration
 
             $table->foreign('idEtudiant')->references('id')->on('etudiants')->cascadeOnDelete();
         });
+
+        Schema::create('cours', function (Blueprint $table) {
+            $table->id('idCours');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->unsignedBigInteger('idEtudiant');
+            $table->unsignedBigInteger('idFiliere');
+            $table->unsignedBigInteger('idSemestre');
+            $table->string('file_path')->nullable();
+            $table->string('lesson_url')->nullable();
+            $table->timestamps();
+
+            $table->foreign('idEtudiant')->references('id')->on('etudiants')->cascadeOnDelete();
+            $table->foreign('idFiliere')->references('idFiliere')->on('filieres')->cascadeOnDelete();
+            $table->foreign('idSemestre')->references('idSemestre')->on('semestres')->cascadeOnDelete();
+        });
     }
 
     public function down(): void
@@ -76,7 +72,6 @@ return new class extends Migration
         Schema::dropIfExists('etudiants');
         Schema::dropIfExists('semestres');
         Schema::dropIfExists('filieres');
-        Schema::dropIfExists('admins');
         Schema::dropIfExists('ecoles');
     }
 };

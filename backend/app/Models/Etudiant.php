@@ -15,4 +15,9 @@ class Etudiant extends Model
     {
         return $this->hasMany(Compte::class, 'idEtudiant', 'id');
     }
+
+    public function cours(): HasMany
+    {
+        return $this->hasMany(Cours::class, 'idEtudiant', 'id');
+    }
 }

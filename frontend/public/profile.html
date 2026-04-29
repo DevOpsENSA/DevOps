@@ -2,51 +2,89 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Profil</title>
-
-<style>
-body {
-    font-family: Arial;
-    background: #f4f6f9;
-    padding: 20px;
-}
-
-.card {
-    background: white;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profil · Plateforme Étudiant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>Profil</h1>
+<nav class="navbar">
+  <a href="dashboard.html" class="brand">
+    <span class="brand-logo"><i class="fa-solid fa-graduation-cap"></i></span>
+    Plateforme
+  </a>
 
-<h2 id="username"></h2>
+  <ul class="nav-links">
+    <li><a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a></li>
+    <li><a href="lessons.html"><i class="fa-solid fa-book-open"></i><span>Leçons</span></a></li>
+    <li><a href="rank.html"><i class="fa-solid fa-trophy"></i><span>Classement</span></a></li>
+    <li><a href="profile.html" class="active"><i class="fa-solid fa-user"></i><span>Profil</span></a></li>
+  </ul>
 
-<h3>Activités récentes</h3>
+  <div class="nav-user">
+    <span id="roleBadge" class="role-badge student">Étudiant</span>
+    <div class="avatar" id="avatar">U</div>
+    <button class="btn btn-danger btn-icon" onclick="logout()" title="Déconnexion">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</nav>
 
-<div id="history"></div>
+<main class="container">
+  <div class="card" style="padding:28px;display:flex;align-items:center;gap:18px;margin-bottom:24px">
+    <div class="avatar" id="bigAvatar" style="width:64px;height:64px;font-size:24px">U</div>
+    <div>
+      <div class="page-title" style="font-size:22px" id="username">Utilisateur</div>
+      <div class="page-subtitle" id="email">email@exemple.com</div>
+    </div>
+  </div>
+
+  <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Activités récentes</h2>
+  <div id="history" class="card-grid">
+    <div class="empty">
+      <i class="fa-solid fa-folder-open"></i>
+      <p>Aucune activité enregistrée.</p>
+    </div>
+  </div>
+</main>
 
 <script>
-let user = localStorage.getItem("user");
+const user = localStorage.getItem("user");
+const mail = localStorage.getItem("userMail");
+const status = localStorage.getItem("userStatus") || "student";
+if (!user) window.location.href = "index.html";
+
 document.getElementById("username").innerText = user;
+document.getElementById("email").innerText = mail || "—";
+const initial = (user || "U").trim().charAt(0).toUpperCase();
+document.getElementById("avatar").innerText = initial;
+document.getElementById("bigAvatar").innerText = initial;
 
-let history = JSON.parse(localStorage.getItem("history")) || [];
+const badge = document.getElementById("roleBadge");
+badge.innerText = status === "admin" ? "Admin" : "Étudiant";
+badge.classList.toggle("admin", status === "admin");
+badge.classList.toggle("student", status !== "admin");
 
-let container = document.getElementById("history");
+function logout() { localStorage.clear(); window.location.href = "index.html"; }
 
-history.forEach(item => {
-    container.innerHTML += `
-        <div class="card">
-            <h3>${item.lesson}</h3>
-            <p>Temps : ${item.time} sec</p>
-            <p>Date : ${item.date}</p>
-        </div>
-    `;
-});
+const history = JSON.parse(localStorage.getItem("history")) || [];
+const container = document.getElementById("history");
+
+if (history.length > 0) {
+  container.innerHTML = history.slice().reverse().map(item => `
+    <div class="card">
+      <div class="card-icon green"><i class="fa-solid fa-clock"></i></div>
+      <h3>${item.lesson}</h3>
+      <p><i class="fa-solid fa-stopwatch"></i> ${item.time} sec</p>
+      <div class="card-meta"><i class="fa-solid fa-calendar"></i> ${item.date}</div>
+    </div>
+  `).join("");
+}
 </script>
 
 </body>

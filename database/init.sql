@@ -5,20 +5,12 @@ DROP TABLE IF EXISTS cours CASCADE;
 DROP TABLE IF EXISTS comptes CASCADE;
 DROP TABLE IF EXISTS semestres CASCADE;
 DROP TABLE IF EXISTS filieres CASCADE;
-DROP TABLE IF EXISTS admins CASCADE;
 DROP TABLE IF EXISTS etudiants CASCADE;
 DROP TABLE IF EXISTS ecoles CASCADE;
 
 CREATE TABLE ecoles (
     "idEcole" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "nomEcole" VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE TABLE admins (
-    "idAdmin" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL DEFAULT 'Admin',
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL
 );
@@ -70,15 +62,17 @@ CREATE TABLE comptes (
 CREATE TABLE cours (
     "idCours" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    "idAdmin" BIGINT NOT NULL,
+    description TEXT NULL,
+    "idEtudiant" BIGINT NOT NULL,
     "idFiliere" BIGINT NOT NULL,
     "idSemestre" BIGINT NOT NULL,
-    file_path VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NULL,
+    lesson_url VARCHAR(2048) NULL,
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL,
-    CONSTRAINT cours_idAdmin_fk
-        FOREIGN KEY ("idAdmin")
-        REFERENCES admins("idAdmin")
+    CONSTRAINT cours_idEtudiant_fk
+        FOREIGN KEY ("idEtudiant")
+        REFERENCES etudiants(id)
         ON DELETE CASCADE,
     CONSTRAINT cours_idFiliere_fk
         FOREIGN KEY ("idFiliere")

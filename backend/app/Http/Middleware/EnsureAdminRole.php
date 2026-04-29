@@ -12,16 +12,18 @@ class EnsureAdminRole
     public function handle(Request $request, Closure $next): Response
     {
         $mail = (string) $request->header('X-User-Mail', '');
-        $isAdmin = Compte::query()
+        $compte = Compte::query()
             ->where('mail', $mail)
             ->where('status', 'admin')
-            ->exists();
+            ->first();
 
-        if (! $isAdmin) {
+        if (! $compte) {
             return response()->json([
                 'message' => 'Only admin can upload lessons. Send X-User-Mail of an admin account.',
             ], Response::HTTP_FORBIDDEN);
         }
+
+        $request->attributes->set('admin_compte', $compte);
 
         return $next($request);
     }
