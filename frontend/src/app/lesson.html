@@ -3,84 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lecture · Plateforme Étudiant</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<title>Lecture · ENSATE Préparation GI</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <nav class="navbar">
-  <a href="dashboard.html" class="brand">
-    <span class="brand-logo"><i class="fa-solid fa-graduation-cap"></i></span>
-    Plateforme
-  </a>
-
+  <a href="dashboard.html" class="brand">ENSATE PRÉPARATION GI</a>
   <ul class="nav-links">
-    <li><a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a></li>
-    <li><a href="lessons.html"><i class="fa-solid fa-book-open"></i><span>Leçons</span></a></li>
-    <!-- <li><a href="rank.html"><i class="fa-solid fa-trophy"></i><span>Classement</span></a></li> -->
-    <!-- <li><a href="profile.html"><i class="fa-solid fa-user"></i><span>Profil</span></a></li> -->
+    <li><a href="dashboard.html">Accueil</a></li>
+    <li><a href="lessons.html">Leçons</a></li>
+    <!-- Désactivé pour le moment
+    <li><a href="rank.html">Classement</a></li>
+    <li><a href="profile.html">Profil</a></li>
+    -->
   </ul>
-
   <div class="nav-user">
-    <span id="roleBadge" class="role-badge student">Étudiant</span>
-    <div class="avatar" id="avatar">U</div>
-    <button class="btn btn-danger btn-icon" onclick="logout()" title="Déconnexion">
-      <i class="fa-solid fa-right-from-bracket"></i>
-    </button>
+    <span id="roleBadge" class="role-badge">Étudiant</span>
+    <div class="avatar" id="avatar">É</div>
+    <button class="btn btn-ghost" onclick="logout()">Déconnexion</button>
   </div>
 </nav>
 
 <main class="container lesson-content">
-  <a href="lessons.html" class="muted" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px">
-    <i class="fa-solid fa-arrow-left"></i> Retour aux leçons
-  </a>
+  <a href="lessons.html" class="muted" style="display:inline-block; margin-bottom:16px">← Retour aux leçons</a>
 
   <div class="page-header">
-    <div class="page-title" id="lessonTitle">Leçon</div>
-    <div class="page-subtitle">Bonne lecture, prenez votre temps.</div>
+    <h1 class="page-title" id="lessonTitle">Leçon</h1>
+    <p class="page-subtitle">Bonne lecture, prenez le temps de bien comprendre.</p>
   </div>
 
   <div class="card" style="padding:28px">
     <div class="flex-row" style="justify-content:space-between">
-      <div class="timer-pill">
-        <i class="fa-solid fa-stopwatch"></i> <span id="timer">0</span> sec
-      </div>
-      <a id="downloadLink" class="btn btn-ghost" target="_blank" style="display:none">
-        <i class="fa-solid fa-download"></i> Télécharger
-      </a>
+      <div class="timer-pill">Temps de lecture · <span id="timer">0</span> sec</div>
+      <a id="downloadLink" class="btn btn-ghost" target="_blank" rel="noopener" style="display:none">Ouvrir la leçon →</a>
     </div>
 
-    <p id="lessonDescription" class="muted" style="margin-top:16px">
-      Le contenu de cette leçon est disponible via le lien ci-dessus. Les actions rapides ci-dessous
-      vous aident à mieux retenir.
+    <p id="lessonDescription" class="muted" style="margin-top:18px">
+      Cliquez sur "Ouvrir la leçon" pour accéder au contenu partagé par votre enseignant.
     </p>
 
     <div class="lesson-actions">
-      <button class="btn btn-primary" onclick="generateQuiz()">
-        <i class="fa-solid fa-circle-question"></i> Générer un quiz
-      </button>
-      <button class="btn btn-success" onclick="generateResume()">
-        <i class="fa-solid fa-list-check"></i> Générer un résumé
-      </button>
+      <!-- Désactivé pour le moment
+      <button class="btn btn-primary" onclick="generateQuiz()">Générer un quiz</button>
+      <button class="btn btn-ghost" onclick="generateResume()">Générer un résumé</button>
+      -->
     </div>
   </div>
 </main>
 
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="app.js"></script>
 <script>
 const user = localStorage.getItem("user");
 const status = localStorage.getItem("userStatus") || "student";
 if (!user) window.location.href = "index.html";
 
-document.getElementById("avatar").innerText = (user || "U").trim().charAt(0).toUpperCase();
+document.getElementById("avatar").innerText = (user || "É").trim().charAt(0).toUpperCase();
 const badge = document.getElementById("roleBadge");
-badge.innerText = status === "admin" ? "Admin" : "Étudiant";
+badge.innerText = status === "admin" ? "Administrateur" : "Étudiant";
 badge.classList.toggle("admin", status === "admin");
-badge.classList.toggle("student", status !== "admin");
 
 function logout() { localStorage.clear(); window.location.href = "index.html"; }
 
@@ -88,10 +71,9 @@ let time = 0;
 const lesson = localStorage.getItem("currentLesson") || "Leçon";
 const url = localStorage.getItem("currentLessonUrl") || "";
 const description = localStorage.getItem("currentLessonDescription") || "";
+
 document.getElementById("lessonTitle").innerText = lesson;
-if (description) {
-  document.getElementById("lessonDescription").innerText = description;
-}
+if (description) document.getElementById("lessonDescription").innerText = description;
 if (url) {
   const link = document.getElementById("downloadLink");
   link.href = url;
@@ -105,14 +87,13 @@ setInterval(() => {
 
 window.onbeforeunload = function () {
   const history = JSON.parse(localStorage.getItem("history")) || [];
-  history.push({
-    lesson, time, date: new Date().toLocaleString()
-  });
+  history.push({ lesson, time, date: new Date().toLocaleString("fr-FR") });
   localStorage.setItem("history", JSON.stringify(history));
 };
 
-function generateQuiz()  { alert("Quiz généré !"); }
-function generateResume(){ alert("Résumé généré !"); }
+// Désactivé pour le moment
+// function generateQuiz()   { toastInfo("Quiz généré."); }
+// function generateResume() { toastInfo("Résumé généré."); }
 </script>
 
 </body>

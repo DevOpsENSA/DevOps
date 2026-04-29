@@ -83,3 +83,17 @@ CREATE TABLE cours (
         REFERENCES semestres("idSemestre")
         ON DELETE CASCADE
 );
+
+-- ===== Default seed data =====
+-- One school, six semesters, ready for lesson uploads.
+INSERT INTO ecoles ("nomEcole", created_at, updated_at)
+VALUES ('ENSATE', NOW(), NOW());
+
+INSERT INTO semestres ("idEcole", created_at, updated_at)
+VALUES (1, NOW(), NOW()),
+       (1, NOW(), NOW()),
+       (1, NOW(), NOW()),
+       (1, NOW(), NOW()),
+       (1, NOW(), NOW()),
+       (1, NOW(), NOW());
+

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cours;
 use App\Models\Compte;
+use App\Models\Cours;
+use App\Models\Ecole;
+use App\Models\Filiere;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,23 +19,43 @@ class LessonController extends Controller
 
         if (! $adminCompte) {
             return response()->json([
-                'message' => 'Admin account not found from request context.',
+                'message' => 'Compte administrateur introuvable.',
             ], 403);
         }
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
-            'idFiliere' => ['required', 'integer', 'exists:filieres,idFiliere'],
+            'nomFiliere' => ['required_without:idFiliere', 'nullable', 'string', 'max:255'],
+            'idFiliere' => ['required_without:nomFiliere', 'nullable', 'integer', 'exists:filieres,idFiliere'],
             'idSemestre' => ['required', 'integer', 'exists:semestres,idSemestre'],
             'lesson_file' => ['nullable', 'file', 'max:10240'],
             'lesson_url' => ['nullable', 'url', 'max:2048'],
+        ], [
+            'name.required' => 'Le titre est obligatoire.',
+            'idSemestre.required' => 'Le semestre est obligatoire.',
+            'idSemestre.exists' => 'Semestre introuvable.',
+            'nomFiliere.required_without' => 'La filière est obligatoire.',
+            'idFiliere.exists' => 'Filière introuvable.',
+            'lesson_url.url' => 'Le lien fourni n\'est pas valide.',
+            'lesson_file.max' => 'Le fichier dépasse la taille autorisée (10 Mo).',
         ]);
 
         if (! $request->hasFile('lesson_file') && empty($validated['lesson_url'])) {
             return response()->json([
-                'message' => 'Provide either lesson_file or lesson_url.',
+                'message' => 'Ajoutez un fichier ou un lien Google Drive.',
             ], 422);
+        }
+
+        $idFiliere = $validated['idFiliere'] ?? null;
+
+        if (! $idFiliere) {
+            $idFiliere = $this->resolveFiliereByName(trim($validated['nomFiliere']));
+            if (! $idFiliere) {
+                return response()->json([
+                    'message' => 'Aucune école configurée. Impossible de créer la filière.',
+                ], 422);
+            }
         }
 
         $storedPath = $request->hasFile('lesson_file')
@@ -44,14 +66,14 @@ class LessonController extends Controller
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'idEtudiant' => $adminCompte->idEtudiant,
-            'idFiliere' => $validated['idFiliere'],
+            'idFiliere' => $idFiliere,
             'idSemestre' => $validated['idSemestre'],
             'file_path' => $storedPath,
             'lesson_url' => $validated['lesson_url'] ?? null,
         ]);
 
         return response()->json([
-            'message' => 'Lesson uploaded successfully.',
+            'message' => 'Leçon publiée avec succès.',
             'data' => $this->formatLesson($cours->load(['etudiant', 'filiere', 'semestre'])),
         ], 201);
     }
@@ -77,6 +99,31 @@ class LessonController extends Controller
         return response()->json([
             'data' => $this->formatLesson($cours),
         ]);
+    }
+
+    /**
+     * Resolve a filière by its name (case-insensitive).
+     * Auto-creates it (linked to the first available école) when missing.
+     * Returns null only when no école exists at all.
+     */
+    private function resolveFiliereByName(string $name): ?int
+    {
+        $filiere = Filiere::whereRaw('LOWER("nomFiliere") = ?', [mb_strtolower($name)])->first();
+        if ($filiere) {
+            return (int) $filiere->idFiliere;
+        }
+
+        $idEcole = Ecole::query()->value('idEcole');
+        if (! $idEcole) {
+            return null;
+        }
+
+        $filiere = Filiere::create([
+            'nomFiliere' => $name,
+            'idEcole' => $idEcole,
+        ]);
+
+        return (int) $filiere->idFiliere;
     }
 
     private function formatLesson(Cours $cours): array
