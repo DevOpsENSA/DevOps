@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f4f6f9;
+}
+
+/* HEADER */
+header {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav a {
+    color: black;
+    margin: 10px;
+    text-decoration: none;
+}
+
+/* MAIN */
+main {
+    padding: 20px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* BUTTONS */
+.read {
+    background: green;
+    color: white;
+}
+
+.lessons-btn {
+    background: #28a745;
+    color: white;
+}
+
+.logout {
+    background: red;
+    color: white;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+    <h1>Dashboard</h1>
+
+    <div>
+        <span id="username"></span>
+        <button class="logout" onclick="logout()">Déconnexion</button>
+    </div>
+</header>
+
+<nav>
+    <a href="#">Accueil</a>
+    <a href="lessons.html">Leçons</a>
+    <a href="profil.html">Profil</a>
+</nav>
+
+<main>
+
+    <!-- ACCÈS RAPIDE -->
+    <h2>Accès rapide</h2>
+
+    <div class="card">
+        <h3>Voir tous les cours</h3>
+        <p>Accéder à la liste complète des leçons</p>
+        <button class="lessons-btn" onclick="goToLessons()">Voir les cours</button>
+    </div>
+
+    <!-- COURS RÉCENTS -->
+    <h2>Cours récents</h2>
+
+    <div class="card">
+        <h3>Algorithmique</h3>
+        <p>Ajouté récemment</p>
+        <button class="read" onclick="readCourse('Algorithmique')">Lire</button>
+    </div>
+
+    <div class="card">
+        <h3>Base de données</h3>
+        <p>Ajouté récemment</p>
+        <button class="read" onclick="readCourse('Base de données')">Lire</button>
+    </div>
+
+    <!-- CONTINUER -->
+    <h2>Continuer</h2>
+
+    <div class="card">
+        <h3>Réseaux</h3>
+        <p>Vous n'avez pas terminé ce cours</p>
+        <button class="read" onclick="readCourse('Réseaux')">Continuer</button>
+    </div>
+
+</main>
+
+<script>
+
+// Vérifier connexion
+let user = localStorage.getItem("user");
+
+if (!user) {
+    window.location.href = "index.html";
+} else {
+    document.getElementById("username").innerText = user;
+}
+
+// Aller vers lessons
+function goToLessons(){
+    window.location.href = "lessons.html";
+}
+
+// 📖 Lire cours
+function readCourse(course){
+    alert("Lecture de : " + course);
+}
+
+//  Déconnexion
+function logout(){
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Leçons</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+header {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.container {
+    padding: 20px;
+}
+
+select {
+    padding: 10px;
+    margin: 10px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+button {
+    margin: 5px;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.read {
+    background: green;
+    color: white;
+}
+
+.fav {
+    background: orange;
+    color: white;
+}
+
+.later {
+    background: gray;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Leçons</h1>
+</header>
+
+<div class="container">
+
+    <!-- Sélection -->
+    <h2>Choisir</h2>
+
+    <select id="semester" onchange="loadModules()">
+        <option value="">-- Semestre --</option>
+        <option value="S1">Semestre 1</option>
+        <option value="S2">Semestre 2</option>
+    </select>
+
+    <select id="module" onchange="loadLessons()">
+        <option value="">-- Module --</option>
+    </select>
+
+    <select id="year" onchange="loadSemesters()">
+    <option value="">-- Année --</option>
+    <option value="1">1ère année</option>
+    <option value="2">2ème année</option>
+    <option value="3">3ème année</option>
+    </select>
+
+    <!-- Résultat -->
+    <div id="lessonsList"></div>
+
+</div>
+
+<script>
+
+// DATA (simulation base de données)
+const data = {
+    "1": {
+        S3: {
+            "Algorithmique": ["Tri", "Boucles"],
+            "Maths": ["Fonctions"]
+        },
+        S4: {
+            "C": ["Pointeurs"],
+            "Physique": ["Mécanique"]
+        }
+    },
+    "2": {
+        S5: {
+            "Base de données": ["SQL", "Jointures"],
+            "POO": ["Classes", "Objets"]
+        },
+        S6: {
+            "Réseaux": ["TCP/IP"],
+            "Web": ["HTML", "CSS"]
+        }
+    }
+};
+
+// charger modules
+function loadSemesters(){
+    let year = document.getElementById("year").value;
+    let semesterSelect = document.getElementById("semester");
+
+    semesterSelect.innerHTML = '<option value="">-- Semestre --</option>';
+
+    if(year && data[year]){
+        for(let sem in data[year]){
+            semesterSelect.innerHTML += `<option value="${sem}">${sem}</option>`;
+        }
+    }
+
+    document.getElementById("module").innerHTML = '<option>-- Module --</option>';
+    document.getElementById("lessonsList").innerHTML = "";
+}
+function loadModules() {
+    let year = document.getElementById("year").value;
+    let semester = document.getElementById("semester").value;
+    let moduleSelect = document.getElementById("module");
+
+    moduleSelect.innerHTML = '<option value="">-- Module --</option>';
+
+    if (data[year] && data[year][semester]) {
+        for (let module in data[year][semester]) {
+            moduleSelect.innerHTML += `<option value="${module}">${module}</option>`;
+        }
+    }
+
+    document.getElementById("lessonsList").innerHTML = "";
+}
+
+// charger leçons
+function loadLessons() {
+    let year = document.getElementById("year").value;
+    let semester = document.getElementById("semester").value;
+    let module = document.getElementById("module").value;
+
+    let container = document.getElementById("lessonsList");
+    container.innerHTML = "";
+
+    if (data[year] && data[year][semester] && data[year][semester][module]) {
+        data[year][semester][module].forEach(lesson => {
+            container.innerHTML += `
+                <div class="card">
+                    <h3>${lesson}</h3>
+
+                    <button class="read" onclick="readLesson('${lesson}')">Lire</button>
+                    <button class="fav">Favori</button>
+                    <button class="later">Lire plus tard</button>
+                </div>
+            `;
+        });
+    }
+}
+// actions
+function readLesson(lesson){
+    localStorage.setItem("currentLesson", lesson);
+    window.location.href = "lesson.html";
+}
+
+function addFav(lesson){
+    alert("Ajouté aux favoris : " + lesson);
+}
+
+function addLater(lesson){
+    alert("Ajouté à lire plus tard : " + lesson);
+}
+
+</script>
+
+</body>
+</html>

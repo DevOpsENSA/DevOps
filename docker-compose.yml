@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - pgdata:/var/lib/postgres/data
+      - pgdata:/var/lib/postgresql/data
     ports:
       - 5433:5432
   backend:
@@ -17,11 +17,12 @@ services:
     depends_on:
       - db
     environment:
+      DB_CONNECTION: pgsql
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: plateformEtudiant
-      DB_USER: admin
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: plateformEtudiant
+      DB_USERNAME: admin
+      DB_PASSWORD: ${DB_PASSWORD:-}
   frontend:
     build: ./frontend
     ports:

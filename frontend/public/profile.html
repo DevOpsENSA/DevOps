@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Profil</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Profil</h1>
+
+<h2 id="username"></h2>
+
+<h3>Activités récentes</h3>
+
+<div id="history"></div>
+
+<script>
+let user = localStorage.getItem("user");
+document.getElementById("username").innerText = user;
+
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+let container = document.getElementById("history");
+
+history.forEach(item => {
+    container.innerHTML += `
+        <div class="card">
+            <h3>${item.lesson}</h3>
+            <p>Temps : ${item.time} sec</p>
+            <p>Date : ${item.date}</p>
+        </div>
+    `;
+});
+</script>
+
+</body>
+</html>

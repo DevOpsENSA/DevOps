@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Classement</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Classement</h1>
+
+<div id="rankList"></div>
+
+<script>
+
+// simulation plusieurs utilisateurs
+let users = [
+    { name: "Nizar", time: 120 },
+    { name: "Ali", time: 80 },
+    { name: "Sara", time: 150 }
+];
+
+// ajouter utilisateur actuel
+let history = JSON.parse(localStorage.getItem("history")) || [];
+let totalTime = history.reduce((sum, h) => sum + h.time, 0);
+
+let currentUser = localStorage.getItem("user");
+
+if(currentUser){
+    users.push({ name: currentUser, time: totalTime });
+}
+
+// tri
+users.sort((a,b) => b.time - a.time);
+
+// affichage
+let container = document.getElementById("rankList");
+
+users.forEach((u, index) => {
+    container.innerHTML += `
+        <div class="card">
+            <h3>${index + 1}. ${u.name}</h3>
+            <p>Temps : ${u.time} sec</p>
+        </div>
+    `;
+});
+</script>
+
+</body>
+</html>
