@@ -13,15 +13,17 @@ class Cours extends Model
 
     protected $fillable = [
         'name',
-        'idAdmin',
+        'description',
+        'idEtudiant',
         'idFiliere',
         'idSemestre',
         'file_path',
+        'lesson_url',
     ];
 
-    public function admin(): BelongsTo
+    public function etudiant(): BelongsTo
     {
-        return $this->belongsTo(Admin::class, 'idAdmin', 'idAdmin');
+        return $this->belongsTo(Etudiant::class, 'idEtudiant', 'id');
     }
 
     public function filiere(): BelongsTo

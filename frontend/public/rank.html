@@ -2,63 +2,86 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Classement</title>
-
-<style>
-body {
-    font-family: Arial;
-    background: #f4f6f9;
-    padding: 20px;
-}
-
-.card {
-    background: white;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classement · Plateforme Étudiant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>Classement</h1>
+<nav class="navbar">
+  <a href="dashboard.html" class="brand">
+    <span class="brand-logo"><i class="fa-solid fa-graduation-cap"></i></span>
+    Plateforme
+  </a>
 
-<div id="rankList"></div>
+  <ul class="nav-links">
+    <li><a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a></li>
+    <li><a href="lessons.html"><i class="fa-solid fa-book-open"></i><span>Leçons</span></a></li>
+    <li><a href="rank.html" class="active"><i class="fa-solid fa-trophy"></i><span>Classement</span></a></li>
+    <li><a href="profile.html"><i class="fa-solid fa-user"></i><span>Profil</span></a></li>
+  </ul>
+
+  <div class="nav-user">
+    <span id="roleBadge" class="role-badge student">Étudiant</span>
+    <div class="avatar" id="avatar">U</div>
+    <button class="btn btn-danger btn-icon" onclick="logout()" title="Déconnexion">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-header">
+    <div class="page-title"><i class="fa-solid fa-trophy" style="color:var(--warning)"></i> Classement</div>
+    <div class="page-subtitle">Les étudiants les plus actifs sur la plateforme.</div>
+  </div>
+
+  <div id="rankList" class="card" style="padding:8px"></div>
+</main>
 
 <script>
+const user = localStorage.getItem("user");
+const status = localStorage.getItem("userStatus") || "student";
+if (!user) window.location.href = "index.html";
 
-// simulation plusieurs utilisateurs
-let users = [
-    { name: "Nizar", time: 120 },
-    { name: "Ali", time: 80 },
-    { name: "Sara", time: 150 }
+document.getElementById("avatar").innerText = (user || "U").trim().charAt(0).toUpperCase();
+const badge = document.getElementById("roleBadge");
+badge.innerText = status === "admin" ? "Admin" : "Étudiant";
+badge.classList.toggle("admin", status === "admin");
+badge.classList.toggle("student", status !== "admin");
+
+function logout() { localStorage.clear(); window.location.href = "index.html"; }
+
+const users = [
+  { name: "Nizar", time: 120 },
+  { name: "Ali",   time: 80  },
+  { name: "Sara",  time: 150 },
 ];
 
-// ajouter utilisateur actuel
-let history = JSON.parse(localStorage.getItem("history")) || [];
-let totalTime = history.reduce((sum, h) => sum + h.time, 0);
+const history = JSON.parse(localStorage.getItem("history")) || [];
+const totalTime = history.reduce((sum, h) => sum + h.time, 0);
+if (user) users.push({ name: user, time: totalTime });
 
-let currentUser = localStorage.getItem("user");
+users.sort((a, b) => b.time - a.time);
 
-if(currentUser){
-    users.push({ name: currentUser, time: totalTime });
-}
+const positionClass = i => i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "";
+const positionIcon  = i => i === 0 ? "fa-crown" : "fa-medal";
 
-// tri
-users.sort((a,b) => b.time - a.time);
-
-// affichage
-let container = document.getElementById("rankList");
-
-users.forEach((u, index) => {
-    container.innerHTML += `
-        <div class="card">
-            <h3>${index + 1}. ${u.name}</h3>
-            <p>Temps : ${u.time} sec</p>
-        </div>
-    `;
-});
+document.getElementById("rankList").innerHTML = users.map((u, i) => `
+  <div class="rank-item" style="border-bottom:${i < users.length - 1 ? '1px solid var(--border)' : 'none'}">
+    <div class="rank-position ${positionClass(i)}">
+      ${i < 3 ? `<i class="fa-solid ${positionIcon(i)}"></i>` : (i + 1)}
+    </div>
+    <div class="avatar" style="background:#f1f5f9;color:var(--text)">${u.name.charAt(0).toUpperCase()}</div>
+    <div class="rank-name">${u.name}</div>
+    <div class="rank-time"><i class="fa-solid fa-stopwatch"></i> ${u.time} sec</div>
+  </div>
+`).join("");
 </script>
 
 </body>

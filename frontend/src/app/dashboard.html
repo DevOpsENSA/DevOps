@@ -2,152 +2,153 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
-
-<style>
-body {
-    font-family: Arial;
-    margin: 0;
-    background: #f4f6f9;
-}
-
-/* HEADER */
-header {
-    background: #007bff;
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-nav a {
-    color: black;
-    margin: 10px;
-    text-decoration: none;
-}
-
-/* MAIN */
-main {
-    padding: 20px;
-}
-
-/* CARD */
-.card {
-    background: white;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
-button {
-    padding: 8px 12px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-/* BUTTONS */
-.read {
-    background: green;
-    color: white;
-}
-
-.lessons-btn {
-    background: #28a745;
-    color: white;
-}
-
-.logout {
-    background: red;
-    color: white;
-}
-</style>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · Plateforme Étudiant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-    <h1>Dashboard</h1>
+<nav class="navbar">
+  <a href="dashboard.html" class="brand">
+    <span class="brand-logo"><i class="fa-solid fa-graduation-cap"></i></span>
+    Plateforme
+  </a>
 
-    <div>
-        <span id="username"></span>
-        <button class="logout" onclick="logout()">Déconnexion</button>
-    </div>
-</header>
+  <ul class="nav-links">
+    <li><a href="dashboard.html" class="active"><i class="fa-solid fa-house"></i><span>Accueil</span></a></li>
+    <li><a href="lessons.html"><i class="fa-solid fa-book-open"></i><span>Leçons</span></a></li>
+    <!-- <li><a href="rank.html"><i class="fa-solid fa-trophy"></i><span>Classement</span></a></li> -->
+    <!-- <li><a href="profile.html"><i class="fa-solid fa-user"></i><span>Profil</span></a></li> -->
+  </ul>
 
-<nav>
-    <a href="#">Accueil</a>
-    <a href="lessons.html">Leçons</a>
-    <a href="profil.html">Profil</a>
+  <div class="nav-user">
+    <span id="roleBadge" class="role-badge student">Étudiant</span>
+    <div class="avatar" id="avatar">U</div>
+    <button class="btn btn-danger btn-icon" onclick="logout()" title="Déconnexion">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
 </nav>
 
-<main>
+<main class="container">
+  <div class="page-header">
+    <div class="page-title">Bonjour, <span id="username">étudiant</span> 👋</div>
+    <div class="page-subtitle">Voici un aperçu rapide de votre parcours.</div>
+  </div>
 
-    <!-- ACCÈS RAPIDE -->
-    <h2>Accès rapide</h2>
-
+  <h2 class="section-title"><i class="fa-solid fa-bolt"></i> Accès rapide</h2>
+  <div class="card-grid">
     <div class="card">
-        <h3>Voir tous les cours</h3>
-        <p>Accéder à la liste complète des leçons</p>
-        <button class="lessons-btn" onclick="goToLessons()">Voir les cours</button>
+      <div class="card-icon"><i class="fa-solid fa-book"></i></div>
+      <h3>Tous les cours</h3>
+      <p>Parcourez la liste complète des leçons disponibles.</p>
+      <button class="btn btn-primary" onclick="goToLessons()">
+        <i class="fa-solid fa-arrow-right"></i> Voir les cours
+      </button>
     </div>
 
-    <!-- COURS RÉCENTS -->
-    <h2>Cours récents</h2>
-
+    <!--
     <div class="card">
-        <h3>Algorithmique</h3>
-        <p>Ajouté récemment</p>
-        <button class="read" onclick="readCourse('Algorithmique')">Lire</button>
+      <div class="card-icon green"><i class="fa-solid fa-chart-line"></i></div>
+      <h3>Mon classement</h3>
+      <p>Suivez votre progression face aux autres étudiants.</p>
+      <button class="btn btn-success" onclick="window.location.href='rank.html'">
+        <i class="fa-solid fa-trophy"></i> Voir le classement
+      </button>
     </div>
 
     <div class="card">
-        <h3>Base de données</h3>
-        <p>Ajouté récemment</p>
-        <button class="read" onclick="readCourse('Base de données')">Lire</button>
+      <div class="card-icon pink"><i class="fa-solid fa-user-circle"></i></div>
+      <h3>Mon profil</h3>
+      <p>Consultez votre activité et vos statistiques.</p>
+      <button class="btn btn-ghost" onclick="window.location.href='profile.html'">
+        <i class="fa-solid fa-arrow-right"></i> Ouvrir
+      </button>
     </div>
+    -->
+  </div>
 
-    <!-- CONTINUER -->
-    <h2>Continuer</h2>
-
-    <div class="card">
-        <h3>Réseaux</h3>
-        <p>Vous n'avez pas terminé ce cours</p>
-        <button class="read" onclick="readCourse('Réseaux')">Continuer</button>
+  <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Cours récents</h2>
+  <div id="recentLessons" class="card-grid">
+    <div class="empty">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Chargement des cours récents...</p>
     </div>
-
+  </div>
 </main>
 
 <script>
+const API_BASE = `${window.location.protocol}//${window.location.hostname}:8080/api`;
 
-// Vérifier connexion
-let user = localStorage.getItem("user");
+const user = localStorage.getItem("user");
+const status = localStorage.getItem("userStatus") || "student";
 
 if (!user) {
-    window.location.href = "index.html";
-} else {
-    document.getElementById("username").innerText = user;
+  window.location.href = "index.html";
 }
 
-// Aller vers lessons
-function goToLessons(){
-    window.location.href = "lessons.html";
+document.getElementById("username").innerText = user || "étudiant";
+document.getElementById("avatar").innerText = (user || "U").trim().charAt(0).toUpperCase();
+const badge = document.getElementById("roleBadge");
+badge.innerText = status === "admin" ? "Admin" : "Étudiant";
+badge.classList.toggle("admin", status === "admin");
+badge.classList.toggle("student", status !== "admin");
+
+function goToLessons() { window.location.href = "lessons.html"; }
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "index.html";
 }
 
-// 📖 Lire cours
-function readCourse(course){
-    alert("Lecture de : " + course);
+async function loadRecent() {
+  const target = document.getElementById("recentLessons");
+  try {
+    const res = await fetch(`${API_BASE}/lessons/recent?limit=6`);
+    const data = await res.json();
+    const lessons = data.data || [];
+    if (lessons.length === 0) {
+      target.innerHTML = `
+        <div class="empty">
+          <i class="fa-solid fa-folder-open"></i>
+          <p>Aucun cours pour le moment.</p>
+        </div>`;
+      return;
+    }
+    target.innerHTML = lessons.map(l => `
+      <div class="card">
+        <div class="card-icon amber"><i class="fa-solid fa-file-lines"></i></div>
+        <h3>${l.name}</h3>
+        <p>${l.description || "Aucune description."}</p>
+        <p>${l.filiereName || "Filière"} · Semestre ${l.idSemestre}</p>
+        <div class="card-meta"><i class="fa-solid fa-user-tie"></i> ${l.uploaderName || "Uploader"}</div>
+        <button class="btn btn-primary" onclick='openLesson(${JSON.stringify(l.name)}, ${JSON.stringify(l.fileUrl || "")}, ${JSON.stringify(l.description || "")})'>
+          <i class="fa-solid fa-book-open-reader"></i> Lire
+        </button>
+      </div>
+    `).join("");
+  } catch (e) {
+    target.innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <p>Impossible de charger les cours.</p>
+      </div>`;
+  }
 }
 
-//  Déconnexion
-function logout(){
-    localStorage.removeItem("user");
-    window.location.href = "index.html";
+function openLesson(name, url, description) {
+  localStorage.setItem("currentLesson", name);
+  if (url) localStorage.setItem("currentLessonUrl", url);
+  localStorage.setItem("currentLessonDescription", description || "");
+  window.location.href = "lesson.html";
 }
 
+loadRecent();
 </script>
 
 </body>

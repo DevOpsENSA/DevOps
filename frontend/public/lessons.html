@@ -2,190 +2,267 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Leçons</title>
-
-<style>
-body {
-    font-family: Arial;
-    background: #f4f6f9;
-    margin: 0;
-}
-
-header {
-    background: #007bff;
-    color: white;
-    padding: 15px;
-    text-align: center;
-}
-
-.container {
-    padding: 20px;
-}
-
-select {
-    padding: 10px;
-    margin: 10px;
-}
-
-.card {
-    background: white;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-}
-
-button {
-    margin: 5px;
-    padding: 8px;
-    border: none;
-    cursor: pointer;
-}
-
-.read {
-    background: green;
-    color: white;
-}
-
-.fav {
-    background: orange;
-    color: white;
-}
-
-.later {
-    background: gray;
-    color: white;
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leçons · Plateforme Étudiant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-    <h1>Leçons</h1>
-</header>
+<nav class="navbar">
+  <a href="dashboard.html" class="brand">
+    <span class="brand-logo"><i class="fa-solid fa-graduation-cap"></i></span>
+    Plateforme
+  </a>
 
-<div class="container">
+  <ul class="nav-links">
+    <li><a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a></li>
+    <li><a href="lessons.html" class="active"><i class="fa-solid fa-book-open"></i><span>Leçons</span></a></li>
+    <!-- <li><a href="rank.html"><i class="fa-solid fa-trophy"></i><span>Classement</span></a></li> -->
+    <!-- <li><a href="profile.html"><i class="fa-solid fa-user"></i><span>Profil</span></a></li> -->
+  </ul>
 
-    <!-- Sélection -->
-    <h2>Choisir</h2>
+  <div class="nav-user">
+    <span id="roleBadge" class="role-badge student">Étudiant</span>
+    <div class="avatar" id="avatar">U</div>
+    <button class="btn btn-danger btn-icon" onclick="logout()" title="Déconnexion">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</nav>
 
-    <select id="semester" onchange="loadModules()">
-        <option value="">-- Semestre --</option>
-        <option value="S1">Semestre 1</option>
-        <option value="S2">Semestre 2</option>
+<main class="container">
+  <div class="page-header">
+    <div class="page-title"><i class="fa-solid fa-book-open" style="color:var(--primary)"></i> Bibliothèque de leçons</div>
+    <div class="page-subtitle">Choisissez une leçon parmi celles publiées par les administrateurs.</div>
+  </div>
+
+  <div id="adminUploadPanel" class="admin-panel hidden">
+    <h2 class="section-title" style="margin-top:0"><i class="fa-solid fa-cloud-arrow-up"></i> Ajouter une leçon</h2>
+    <div class="flex-row" style="margin-bottom:12px">
+      <input id="lessonTitle" class="form-control" style="max-width:320px" placeholder="Titre de la leçon">
+      <input id="lessonDescription" class="form-control" style="max-width:420px" placeholder="Description">
+    </div>
+    <div class="flex-row" style="margin-bottom:12px">
+      <input id="lessonUrl" class="form-control" style="max-width:520px" placeholder="Lien Google Drive (optionnel)">
+      <select id="uploadSemester" class="form-control" style="max-width:200px">
+        <option value="">Semestre</option>
+        <option value="1">Semestre 1</option>
+        <option value="2">Semestre 2</option>
+        <option value="3">Semestre 3</option>
+        <option value="4">Semestre 4</option>
+        <option value="5">Semestre 5</option>
+        <option value="6">Semestre 6</option>
+      </select>
+      <input id="uploadFiliereId" class="form-control" style="max-width:180px" placeholder="idFiliere">
+    </div>
+    <div id="dropzone" class="dropzone" style="margin-bottom:12px">
+      <i class="fa-solid fa-file-arrow-up"></i>
+      <p>Glissez un fichier ici ou cliquez pour choisir.</p>
+      <input id="lessonFileInput" type="file" style="display:none">
+      <div id="pickedFileName" class="muted"></div>
+    </div>
+    <button class="btn btn-primary" onclick="uploadLesson()">
+      <i class="fa-solid fa-upload"></i> Publier la leçon
+    </button>
+  </div>
+
+  <h2 class="section-title"><i class="fa-solid fa-filter"></i> Filtres</h2>
+  <div class="flex-row" style="margin-bottom:24px">
+    <select id="year" class="form-control" style="max-width:220px" onchange="renderLessons()">
+      <option value="">Année (toutes)</option>
+      <option value="1">1ère année</option>
+      <option value="2">2ème année</option>
+      <option value="3">3ème année</option>
     </select>
-
-    <select id="module" onchange="loadLessons()">
-        <option value="">-- Module --</option>
+    <select id="semester" class="form-control" style="max-width:220px" onchange="renderLessons()">
+      <option value="">Semestre (tous)</option>
+      <option value="1">Semestre 1</option>
+      <option value="2">Semestre 2</option>
+      <option value="3">Semestre 3</option>
+      <option value="4">Semestre 4</option>
     </select>
-
-    <select id="year" onchange="loadSemesters()">
-    <option value="">-- Année --</option>
-    <option value="1">1ère année</option>
-    <option value="2">2ème année</option>
-    <option value="3">3ème année</option>
+    <select id="filiere" class="form-control" style="max-width:240px" onchange="renderLessons()">
+      <option value="">Filière (toutes)</option>
     </select>
+  </div>
 
-    <!-- Résultat -->
-    <div id="lessonsList"></div>
-
-</div>
+  <h2 class="section-title"><i class="fa-solid fa-rectangle-list"></i> Cours disponibles</h2>
+  <div id="lessonsList" class="card-grid">
+    <div class="empty">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Chargement...</p>
+    </div>
+  </div>
+</main>
 
 <script>
+const API_BASE = `${window.location.protocol}//${window.location.hostname}:8080/api`;
+const user = localStorage.getItem("user");
+const userMail = localStorage.getItem("userMail");
+const status = localStorage.getItem("userStatus") || "student";
+if (!user) window.location.href = "index.html";
 
-// DATA (simulation base de données)
-const data = {
-    "1": {
-        S3: {
-            "Algorithmique": ["Tri", "Boucles"],
-            "Maths": ["Fonctions"]
-        },
-        S4: {
-            "C": ["Pointeurs"],
-            "Physique": ["Mécanique"]
-        }
-    },
-    "2": {
-        S5: {
-            "Base de données": ["SQL", "Jointures"],
-            "POO": ["Classes", "Objets"]
-        },
-        S6: {
-            "Réseaux": ["TCP/IP"],
-            "Web": ["HTML", "CSS"]
-        }
+document.getElementById("avatar").innerText = (user || "U").trim().charAt(0).toUpperCase();
+const badge = document.getElementById("roleBadge");
+badge.innerText = status === "admin" ? "Admin" : "Étudiant";
+badge.classList.toggle("admin", status === "admin");
+badge.classList.toggle("student", status !== "admin");
+
+if (status === "admin") {
+  document.getElementById("adminUploadPanel").classList.remove("hidden");
+}
+
+function logout() { localStorage.clear(); window.location.href = "index.html"; }
+
+let allLessons = [];
+
+async function loadLessons() {
+  try {
+    const res = await fetch(`${API_BASE}/lessons/recent?limit=50`);
+    const data = await res.json();
+    allLessons = data.data || [];
+    populateFiliereOptions();
+    renderLessons();
+  } catch (e) {
+    document.getElementById("lessonsList").innerHTML =
+      `<div class="empty"><i class="fa-solid fa-circle-exclamation"></i><p>Erreur de chargement.</p></div>`;
+  }
+}
+
+function populateFiliereOptions() {
+  const select = document.getElementById("filiere");
+  const filieres = [...new Set(allLessons.map(l => l.filiereName).filter(Boolean))];
+  filieres.forEach(f => {
+    const opt = document.createElement("option");
+    opt.value = f; opt.textContent = f;
+    select.appendChild(opt);
+  });
+}
+
+function renderLessons() {
+  const semester = document.getElementById("semester").value;
+  const filiere = document.getElementById("filiere").value;
+  const target = document.getElementById("lessonsList");
+
+  const filtered = allLessons.filter(l =>
+    (!semester || String(l.idSemestre) === semester) &&
+    (!filiere || l.filiereName === filiere)
+  );
+
+  if (filtered.length === 0) {
+    target.innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-folder-open"></i>
+        <p>Aucune leçon ne correspond à vos filtres.</p>
+      </div>`;
+    return;
+  }
+
+  target.innerHTML = filtered.map(l => `
+    <div class="card">
+      <div class="card-icon"><i class="fa-solid fa-file-lines"></i></div>
+      <h3>${l.name}</h3>
+      <p>${l.description || "Aucune description."}</p>
+      <p>${l.filiereName || "Filière"} · Semestre ${l.idSemestre}</p>
+      <div class="card-meta">
+        <span><i class="fa-solid fa-user-tie"></i> ${l.uploaderName || "Uploader"}</span>
+      </div>
+      <div class="flex-row">
+        <button class="btn btn-primary" onclick='openLesson(${JSON.stringify(l.name)}, ${JSON.stringify(l.fileUrl || "")}, ${JSON.stringify(l.description || "")})'>
+          <i class="fa-solid fa-book-open-reader"></i> Lire
+        </button>
+        <button class="btn btn-ghost" onclick="alert('Ajouté aux favoris')">
+          <i class="fa-solid fa-heart" style="color:var(--accent)"></i>
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function openLesson(name, url, description) {
+  localStorage.setItem("currentLesson", name);
+  if (url) localStorage.setItem("currentLessonUrl", url);
+  localStorage.setItem("currentLessonDescription", description || "");
+  window.location.href = "lesson.html";
+}
+
+loadLessons();
+
+let selectedLessonFile = null;
+const dropzone = document.getElementById("dropzone");
+const lessonFileInput = document.getElementById("lessonFileInput");
+dropzone.addEventListener("click", () => lessonFileInput.click());
+lessonFileInput.addEventListener("change", () => {
+  selectedLessonFile = lessonFileInput.files[0] || null;
+  document.getElementById("pickedFileName").innerText = selectedLessonFile ? selectedLessonFile.name : "";
+});
+dropzone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropzone.classList.add("dragover");
+});
+dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+dropzone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropzone.classList.remove("dragover");
+  selectedLessonFile = e.dataTransfer.files[0] || null;
+  document.getElementById("pickedFileName").innerText = selectedLessonFile ? selectedLessonFile.name : "";
+});
+
+async function uploadLesson() {
+  const name = document.getElementById("lessonTitle").value.trim();
+  const description = document.getElementById("lessonDescription").value.trim();
+  const lessonUrl = document.getElementById("lessonUrl").value.trim();
+  const idSemestre = document.getElementById("uploadSemester").value;
+  const idFiliere = document.getElementById("uploadFiliereId").value.trim();
+
+  if (!name || !idSemestre || !idFiliere) {
+    alert("Titre, semestre et idFiliere sont obligatoires.");
+    return;
+  }
+
+  if (!selectedLessonFile && !lessonUrl) {
+    alert("Ajoutez un fichier ou un lien Google Drive.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("description", description);
+  formData.append("idSemestre", idSemestre);
+  formData.append("idFiliere", idFiliere);
+  if (lessonUrl) formData.append("lesson_url", lessonUrl);
+  if (selectedLessonFile) formData.append("lesson_file", selectedLessonFile);
+
+  try {
+    const res = await fetch(`${API_BASE}/lessons`, {
+      method: "POST",
+      headers: { "X-User-Mail": userMail || "" },
+      body: formData,
+    });
+    const payload = await res.json();
+    if (!res.ok) {
+      alert(payload.message || "Erreur upload.");
+      return;
     }
-};
-
-// charger modules
-function loadSemesters(){
-    let year = document.getElementById("year").value;
-    let semesterSelect = document.getElementById("semester");
-
-    semesterSelect.innerHTML = '<option value="">-- Semestre --</option>';
-
-    if(year && data[year]){
-        for(let sem in data[year]){
-            semesterSelect.innerHTML += `<option value="${sem}">${sem}</option>`;
-        }
-    }
-
-    document.getElementById("module").innerHTML = '<option>-- Module --</option>';
-    document.getElementById("lessonsList").innerHTML = "";
+    alert("Leçon ajoutée.");
+    document.getElementById("lessonTitle").value = "";
+    document.getElementById("lessonDescription").value = "";
+    document.getElementById("lessonUrl").value = "";
+    document.getElementById("uploadSemester").value = "";
+    document.getElementById("uploadFiliereId").value = "";
+    document.getElementById("lessonFileInput").value = "";
+    document.getElementById("pickedFileName").innerText = "";
+    selectedLessonFile = null;
+    await loadLessons();
+  } catch (e) {
+    alert("Impossible de contacter le serveur.");
+  }
 }
-function loadModules() {
-    let year = document.getElementById("year").value;
-    let semester = document.getElementById("semester").value;
-    let moduleSelect = document.getElementById("module");
-
-    moduleSelect.innerHTML = '<option value="">-- Module --</option>';
-
-    if (data[year] && data[year][semester]) {
-        for (let module in data[year][semester]) {
-            moduleSelect.innerHTML += `<option value="${module}">${module}</option>`;
-        }
-    }
-
-    document.getElementById("lessonsList").innerHTML = "";
-}
-
-// charger leçons
-function loadLessons() {
-    let year = document.getElementById("year").value;
-    let semester = document.getElementById("semester").value;
-    let module = document.getElementById("module").value;
-
-    let container = document.getElementById("lessonsList");
-    container.innerHTML = "";
-
-    if (data[year] && data[year][semester] && data[year][semester][module]) {
-        data[year][semester][module].forEach(lesson => {
-            container.innerHTML += `
-                <div class="card">
-                    <h3>${lesson}</h3>
-
-                    <button class="read" onclick="readLesson('${lesson}')">Lire</button>
-                    <button class="fav">Favori</button>
-                    <button class="later">Lire plus tard</button>
-                </div>
-            `;
-        });
-    }
-}
-// actions
-function readLesson(lesson){
-    localStorage.setItem("currentLesson", lesson);
-    window.location.href = "lesson.html";
-}
-
-function addFav(lesson){
-    alert("Ajouté aux favoris : " + lesson);
-}
-
-function addLater(lesson){
-    alert("Ajouté à lire plus tard : " + lesson);
-}
-
 </script>
 
 </body>
