@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Lecture</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+button {
+    padding: 10px;
+    margin: 10px 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.quiz { background: blue; color: white; }
+.resume { background: green; color: white; }
+</style>
+</head>
+
+<body>
+
+<h1 id="lessonTitle">Lecture</h1>
+
+<div class="card">
+    <p>Contenu de la leçon...</p>
+
+    <h3>Temps : <span id="timer">0</span> sec</h3>
+
+    <button class="quiz" onclick="generateQuiz()">Quiz</button>
+    <button class="resume" onclick="generateResume()">Résumé</button>
+</div>
+
+<script>
+let time = 0;
+let lesson = localStorage.getItem("currentLesson") || "Leçon";
+
+// afficher titre
+document.getElementById("lessonTitle").innerText = lesson;
+
+// compteur
+setInterval(() => {
+    time++;
+    document.getElementById("timer").innerText = time;
+}, 1000);
+
+// sauvegarde quand on quitte
+window.onbeforeunload = function () {
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+
+    history.push({
+        lesson: lesson,
+        time: time,
+        date: new Date().toLocaleString()
+    });
+
+    localStorage.setItem("history", JSON.stringify(history));
+};
+
+// quiz
+function generateQuiz(){
+    alert("Quiz généré !");
+}
+
+// résumé
+function generateResume(){
+    alert("Résumé généré !");
+}
+</script>
+
+</body>
+</html>
