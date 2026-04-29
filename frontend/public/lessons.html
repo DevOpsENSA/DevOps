@@ -89,9 +89,12 @@
 
 <script src="app.js"></script>
 <script>
-const API_BASE = `${window.location.protocol}//${window.location.hostname}:8080/api`;
+const API_BASE = `http://${window.location.hostname}:8080/api`;
 const user = localStorage.getItem("user");
 const userMail = localStorage.getItem("userMail");
+if (!userMail) {
+  toastError("Session invalide. Veuillez vous reconnecter.");
+}")
 const status = localStorage.getItem("userStatus") || "student";
 if (!user) window.location.href = "index.html";
 
@@ -221,11 +224,23 @@ async function uploadLesson() {
       headers: { "X-User-Mail": userMail || "" },
       body: formData,
     });
-    const payload = await res.json();
+
+    const raw = await res.text();
+    let payload = {};
+    try { payload = raw ? JSON.parse(raw) : {}; } catch { payload = {}; }
+
     if (!res.ok) {
-      toastError(payload.message || "Erreur lors de la publication.");
+      if (res.status === 403) {
+        toastError(payload.message || "Accès refusé. Connectez-vous avec un compte administrateur.");
+      } else if (res.status === 422) {
+        const validation = payload.errors ? Object.values(payload.errors).flat()[0] : null;
+        toastError(validation || payload.message || "Données invalides.");
+      } else {
+        toastError(payload.message || `Erreur serveur (${res.status}).`);
+      }
       return;
     }
+
     toastSuccess("Leçon publiée avec succès.");
 
     document.getElementById("lessonTitle").value = "";
