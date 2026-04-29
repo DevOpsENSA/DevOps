@@ -89,7 +89,7 @@
 
 <script src="app.js"></script>
 <script>
-const API_BASE = `${window.location.protocol}//${window.location.hostname}:8080/api`;
+const API_BASE = "/api";
 const user = localStorage.getItem("user");
 const userMail = localStorage.getItem("userMail");
 const status = localStorage.getItem("userStatus") || "student";
@@ -218,7 +218,11 @@ async function uploadLesson() {
   try {
     const res = await fetch(`${API_BASE}/lessons`, {
       method: "POST",
-      headers: { "X-User-Mail": userMail || "" },
+      headers: {
+        "X-User-Mail": userMail || "",
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
       body: formData,
     });
     const payload = await res.json();
@@ -238,8 +242,8 @@ async function uploadLesson() {
     selectedLessonFile = null;
 
     await loadLessons();
-  } catch {
-    toastError("Impossible de contacter le serveur.");
+  } catch (e) {
+    toastError(`Impossible de contacter le serveur. ${e?.message || ""}`.trim());
   }
 }
 </script>
