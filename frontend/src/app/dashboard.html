@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accueil · ENSATE Préparation GI</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="dashboard.html" class="brand">ENSATE PRÉPARATION GI</a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html" class="active">Accueil</a></li>
+    <li><a href="lessons.html">Leçons</a></li>
+    <!-- Désactivé pour le moment
+    <li><a href="rank.html">Classement</a></li>
+    <li><a href="profile.html">Profil</a></li>
+    -->
+  </ul>
+  <div class="nav-user">
+    <span id="roleBadge" class="role-badge">Étudiant</span>
+    <div class="avatar" id="avatar">É</div>
+    <button class="btn btn-ghost" onclick="logout()">Déconnexion</button>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-header">
+    <h1 class="page-title">Bonjour, <span id="username">étudiant</span></h1>
+    <p class="page-subtitle">Bienvenue sur votre espace de préparation Génie Informatique.</p>
+  </div>
+
+  <h2 class="section-title">Accès rapide</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3>Bibliothèque de leçons</h3>
+      <p>Consultez les cours partagés par vos enseignants et préparez vos examens.</p>
+      <button class="btn btn-primary" onclick="goToLessons()">Voir les leçons →</button>
+    </div>
+    <div class="card">
+      <h3>Préparation Génie Informatique</h3>
+      <p>Programmes, modules et ressources adaptés au cursus de l'ENSATE.</p>
+      <span class="muted">Bientôt disponible</span>
+    </div>
+    <div class="card">
+      <h3>Centre d'aide</h3>
+      <p>Consultez les guides et bonnes pratiques pour utiliser la plateforme.</p>
+      <span class="muted">Bientôt disponible</span>
+    </div>
+    <!-- Désactivé pour le moment
+    <div class="card">
+      <h3>Classement</h3>
+      <p>Comparez votre progression avec celle des autres étudiants.</p>
+      <button class="btn btn-primary" onclick="window.location.href='rank.html'">Voir le classement →</button>
+    </div>
+    <div class="card">
+      <h3>Mon profil</h3>
+      <p>Consultez vos informations personnelles et votre activité récente.</p>
+      <button class="btn btn-primary" onclick="window.location.href='profile.html'">Mon profil →</button>
+    </div>
+    -->
+  </div>
+
+  <h2 class="section-title">Cours récents</h2>
+  <div id="recentLessons" class="card-grid">
+    <div class="empty">Chargement des leçons récentes...</div>
+  </div>
+</main>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="app.js"></script>
+<script>
+const API_BASE = "/api";
+const user = localStorage.getItem("user");
+const status = localStorage.getItem("userStatus") || "student";
+if (!user) window.location.href = "index.html";
+
+document.getElementById("username").innerText = user || "étudiant";
+document.getElementById("avatar").innerText = (user || "É").trim().charAt(0).toUpperCase();
+const badge = document.getElementById("roleBadge");
+badge.innerText = status === "admin" ? "Administrateur" : "Étudiant";
+badge.classList.toggle("admin", status === "admin");
+
+function goToLessons() { window.location.href = "lessons.html"; }
+function logout() { localStorage.clear(); window.location.href = "index.html"; }
+
+async function loadRecent() {
+  const target = document.getElementById("recentLessons");
+  try {
+    const res = await fetch(`${API_BASE}/lessons/recent?limit=6`);
+    const data = await res.json();
+    const lessons = data.data || [];
+    if (lessons.length === 0) {
+      target.innerHTML = `<div class="empty">Aucun cours pour le moment. Revenez bientôt.</div>`;
+      return;
+    }
+    target.innerHTML = lessons.map(l => `
+      <div class="card">
+        <h3>${l.name}</h3>
+        <p>${l.description || "Aucune description disponible."}</p>
+        <div class="card-meta">${l.filiereName || "Filière"} · Semestre ${l.idSemestre} · ${l.uploaderName || "Enseignant"}</div>
+        <button class="btn btn-primary" onclick='openLesson(${JSON.stringify(l.name)}, ${JSON.stringify(l.fileUrl || "")}, ${JSON.stringify(l.description || "")})'>Lire la leçon →</button>
+      </div>
+    `).join("");
+  } catch {
+    target.innerHTML = `<div class="empty">Impossible de charger les leçons.</div>`;
+    toastError("Erreur de connexion au serveur.");
+  }
+}
+
+function openLesson(name, url, description) {
+  localStorage.setItem("currentLesson", name);
+  if (url) localStorage.setItem("currentLessonUrl", url);
+  localStorage.setItem("currentLessonDescription", description || "");
+  window.location.href = "lesson.html";
+}
+
+loadRecent();
+</script>
+
+</body>
+</html>
