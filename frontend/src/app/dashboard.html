@@ -27,7 +27,7 @@
 
 <main class="container">
   <div class="page-header">
-    <h1 class="page-title">Bonjour, <span id="username">étudiant</span></h1>
+    <h1 class="page-title">Bon retour, <span id="username">étudiant</span></h1>
     <p class="page-subtitle">Bienvenue sur votre espace de préparation Génie Informatique.</p>
   </div>
 
@@ -75,7 +75,7 @@
 const API_BASE = "/api";
 const user = localStorage.getItem("user");
 const status = localStorage.getItem("userStatus") || "student";
-if (!user) window.location.href = "index.html";
+if (!user) window.location.href = "auth.html";
 
 document.getElementById("username").innerText = user || "étudiant";
 document.getElementById("avatar").innerText = (user || "É").trim().charAt(0).toUpperCase();
@@ -84,7 +84,7 @@ badge.innerText = status === "admin" ? "Administrateur" : "Étudiant";
 badge.classList.toggle("admin", status === "admin");
 
 function goToLessons() { window.location.href = "lessons.html"; }
-function logout() { localStorage.clear(); window.location.href = "index.html"; }
+function logout() { localStorage.clear(); window.location.href = "auth.html"; }
 
 async function loadRecent() {
   const target = document.getElementById("recentLessons");
