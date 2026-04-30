@@ -93,7 +93,7 @@ const API_BASE = "/api";
 const user = localStorage.getItem("user");
 const userMail = localStorage.getItem("userMail");
 const status = localStorage.getItem("userStatus") || "student";
-if (!user) window.location.href = "index.html";
+if (!user) window.location.href = "auth.html";
 
 document.getElementById("avatar").innerText = (user || "É").trim().charAt(0).toUpperCase();
 const badge = document.getElementById("roleBadge");
@@ -104,7 +104,7 @@ if (status === "admin") {
   document.getElementById("adminUploadPanel").classList.remove("hidden");
 }
 
-function logout() { localStorage.clear(); window.location.href = "index.html"; }
+function logout() { localStorage.clear(); window.location.href = "auth.html"; }
 
 let allLessons = [];
 
