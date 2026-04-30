@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ENSATE Préparation GI</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-brand">ENSATE PRÉPARATION GI</div>
+    <p class="auth-subtitle">Plateforme de préparation Génie Informatique</p>
+
+    <div id="loginForm">
+      <h2>Connexion</h2>
+      <p class="subtitle">Accédez à votre espace étudiant</p>
+
+      <form onsubmit="login(event)">
+        <div class="form-group">
+          <label class="form-label">Adresse email</label>
+          <input class="form-control" type="email" id="loginEmail" placeholder="prenom.nom@etu.uae.ac.ma" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-control" type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+      </form>
+
+      <p class="auth-toggle">Pas encore de compte ? <a onclick="showRegister()">Créer un compte</a></p>
+    </div>
+
+    <div id="registerForm" class="hidden">
+      <h2>Inscription</h2>
+      <p class="subtitle">Créez votre compte étudiant ENSATE</p>
+
+      <form onsubmit="register(event)">
+        <div class="form-group">
+          <label class="form-label">Nom complet</label>
+          <input class="form-control" type="text" id="regName" placeholder="Nom Prénom" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Adresse email</label>
+          <input class="form-control" type="email" id="regEmail" placeholder="prenom.nom@etu.uae.ac.ma" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-control" type="password" id="regPassword" placeholder="6 caractères minimum" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">S'inscrire</button>
+      </form>
+
+      <p class="auth-toggle">Déjà inscrit ? <a onclick="showLogin()">Se connecter</a></p>
+    </div>
+  </div>
+</div>
+
+<div id="licenseModal" class="license-modal hidden">
+  <div class="license-card">
+    <h3>Conditions d'utilisation</h3>
+    <p>Cette plateforme utilise vos données uniquement dans un cadre éducatif afin d'améliorer votre expérience d'apprentissage.</p>
+    <label class="license-check">
+      <input type="checkbox" id="licenseAcceptCheckbox">
+      <span>J’ai lu et j’accepte les conditions d’utilisation</span>
+    </label>
+    <button id="licenseConfirmBtn" class="btn btn-primary btn-block" disabled>Confirmer</button>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="app.js"></script>
+<script>
+const API_BASE = "/api";
+let pendingAction = null;
+
+function showRegister() {
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("registerForm").classList.remove("hidden");
+}
+function showLogin() {
+  document.getElementById("registerForm").classList.add("hidden");
+  document.getElementById("loginForm").classList.remove("hidden");
+}
+
+function setLicenseModalState(open) {
+  const modal = document.getElementById("licenseModal");
+  const shell = document.querySelector(".auth-shell");
+  modal.classList.toggle("hidden", !open);
+  shell.classList.toggle("blurred", open);
+  document.body.classList.toggle("modal-open", open);
+}
+
+function showLicenseModal(onConfirm) {
+  const checkbox = document.getElementById("licenseAcceptCheckbox");
+  const btn = document.getElementById("licenseConfirmBtn");
+  checkbox.checked = false;
+  btn.disabled = true;
+  pendingAction = onConfirm;
+  setLicenseModalState(true);
+}
+
+document.getElementById("licenseAcceptCheckbox").addEventListener("change", (e) => {
+  document.getElementById("licenseConfirmBtn").disabled = !e.target.checked;
+});
+
+document.getElementById("licenseConfirmBtn").addEventListener("click", () => {
+  localStorage.setItem("licenseAccepted", "true");
+  setLicenseModalState(false);
+  if (typeof pendingAction === "function") pendingAction();
+  pendingAction = null;
+});
+
+async function register(e) {
+  e.preventDefault();
+  const fullName = document.getElementById("regName").value.trim();
+  const email = document.getElementById("regEmail").value.trim();
+  const password = document.getElementById("regPassword").value.trim();
+
+  if (!fullName || !email || !password) {
+    toastError("Veuillez remplir tous les champs.");
+    return;
+  }
+  if (!isValidUaeEmail(email)) {
+    toastError("Email invalide. Utilisez votre adresse @etu.uae.ac.ma.");
+    return;
+  }
+  if (password.length < 6) {
+    toastError("Le mot de passe doit contenir au moins 6 caractères.");
+    return;
+  }
+
+  const parts = fullName.split(/\s+/).filter(Boolean);
+  const nom = parts[0] || fullName;
+  const prenom = parts.slice(1).join(" ") || "Étudiant";
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: JSON.stringify({ nom, prenom, mail: email, password }),
+    });
+    const raw = await res.text();
+    let payload = {};
+    try { payload = raw ? JSON.parse(raw) : {}; } catch { payload = {}; }
+    if (!res.ok) {
+      toastError(payload.message || "Erreur lors de l'inscription.");
+      return;
+    }
+    showLicenseModal(() => {
+      toastSuccess("Inscription réussie. Vous pouvez vous connecter.");
+      showLogin();
+    });
+  } catch {
+    toastError("Impossible de contacter le serveur.");
+  }
+}
+
+async function login(e) {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  if (!email || !password) {
+    toastError("Veuillez remplir tous les champs.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: JSON.stringify({ mail: email, password }),
+    });
+    const raw = await res.text();
+    let payload = {};
+    try { payload = raw ? JSON.parse(raw) : {}; } catch { payload = {}; }
+    if (!res.ok) {
+      toastError(payload.message || "Email ou mot de passe incorrect.");
+      return;
+    }
+    const data = payload.data || {};
+    localStorage.setItem("user", `${data.nom || ""} ${data.prenom || ""}`.trim() || data.mail || "Étudiant");
+    localStorage.setItem("userMail", data.mail || email);
+    localStorage.setItem("userStatus", data.status || "student");
+    showLicenseModal(() => {
+      toastSuccess("Bienvenue.");
+      setTimeout(() => window.location.href = "dashboard.html", 400);
+    });
+  } catch {
+    toastError("Impossible de contacter le serveur.");
+  }
+}
+</script>
+
+</body>
+</html>

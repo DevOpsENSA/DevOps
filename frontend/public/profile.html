@@ -57,7 +57,7 @@
 const user = localStorage.getItem("user");
 const mail = localStorage.getItem("userMail");
 const status = localStorage.getItem("userStatus") || "student";
-if (!user) window.location.href = "index.html";
+if (!user) window.location.href = "auth.html";
 
 document.getElementById("username").innerText = user;
 document.getElementById("email").innerText = mail || "—";
@@ -70,7 +70,7 @@ badge.innerText = status === "admin" ? "Admin" : "Étudiant";
 badge.classList.toggle("admin", status === "admin");
 badge.classList.toggle("student", status !== "admin");
 
-function logout() { localStorage.clear(); window.location.href = "index.html"; }
+function logout() { localStorage.clear(); window.location.href = "auth.html"; }
 
 const history = JSON.parse(localStorage.getItem("history")) || [];
 const container = document.getElementById("history");
