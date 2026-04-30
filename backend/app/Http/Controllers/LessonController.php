@@ -14,6 +14,9 @@ class LessonController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
+
+
+    //kind of hard to understand
         /** @var Compte|null $adminCompte */
         $adminCompte = $request->attributes->get('admin_compte');
 
@@ -27,7 +30,7 @@ class LessonController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'nomFiliere' => ['required_without:idFiliere', 'nullable', 'string', 'max:255'],
-            'idFiliere' => ['required_without:nomFiliere', 'nullable', 'integer', 'exists:filieres,idFiliere'],
+            //'idFiliere' => ['required_without:nomFiliere', 'nullable', 'integer', 'exists:filieres,idFiliere'],
             'idSemestre' => ['required', 'integer', 'exists:semestres,idSemestre'],
             'lesson_file' => ['nullable', 'file', 'max:10240'],
             'lesson_url' => ['nullable', 'url', 'max:2048'],
@@ -47,16 +50,16 @@ class LessonController extends Controller
             ], 422);
         }
 
-        $idFiliere = $validated['idFiliere'] ?? null;
+   //     $idFiliere = $validated['idFiliere'] ?? null;
 
-        if (! $idFiliere) {
-            $idFiliere = $this->resolveFiliereByName(trim($validated['nomFiliere']));
-            if (! $idFiliere) {
-                return response()->json([
-                    'message' => 'Aucune école configurée. Impossible de créer la filière.',
-                ], 422);
-            }
-        }
+  //      if (! $idFiliere) {
+    //        $idFiliere = $this->resolveFiliereByName(trim($validated['nomFiliere']));
+      //      if (! $idFiliere) {
+        //        return response()->json([
+     //               'message' => 'Aucune école configurée. Impossible de créer la filière.',
+       //         ], 422);
+         //   }
+      //  }
 
         $storedPath = $request->hasFile('lesson_file')
             ? $request->file('lesson_file')->store('lessons', 'public')
