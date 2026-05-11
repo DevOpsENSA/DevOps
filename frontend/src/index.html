@@ -3,148 +3,227 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ENSATE Préparation GI</title>
+<title>ENSATE Preparation GI</title>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-<body>
+<body class="landing-page">
+<main>
+  <section class="landing-hero">
+    <canvas id="shaderCanvas" class="shader-canvas" aria-hidden="true"></canvas>
+    <div class="hero-vignette" aria-hidden="true"></div>
 
-<div class="auth-shell">
-  <div class="auth-card">
-    <div class="auth-brand">ENSATE PRÉPARATION GI</div>
-    <p class="auth-subtitle">Plateforme de préparation Génie Informatique</p>
+    <div class="landing-content">
+      <span class="hero-eyebrow">
+        <span class="hero-eyebrow-dot"></span>
+        Plateforme étudiante &middot; Génie Informatique
+      </span>
 
-    <div id="loginForm">
-      <h2>Connexion</h2>
-      <p class="subtitle">Accédez à votre espace étudiant</p>
+      <h1>ENSATE Préparation <span class="hero-accent">GI</span></h1>
 
-      <form onsubmit="login(event)">
-        <div class="form-group">
-          <label class="form-label">Adresse email</label>
-          <input class="form-control" type="email" id="loginEmail" placeholder="prenom.nom@etu.uae.ac.ma" required>
+      <p class="landing-subtitle">
+        Boostez vos révisions et atteignez vos objectifs académiques plus efficacement,
+        avec des cours, des classements et un suivi personnalisé.
+      </p>
+
+      <div class="landing-actions">
+        <a class="btn btn-primary" href="auth.html">
+          Accéder à la plateforme <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <button class="btn btn-light" id="learnMoreBtn">En savoir plus</button>
+      </div>
+
+      <div class="hero-features">
+        <span class="hero-pill"><i class="fa-solid fa-book-open-reader"></i> Cours structurés</span>
+        <span class="hero-pill"><i class="fa-solid fa-chart-line"></i> Suivi de progression</span>
+        <span class="hero-pill"><i class="fa-solid fa-trophy"></i> Classement</span>
+      </div>
+
+      <div class="hero-stats" aria-hidden="true">
+        <div class="hero-stat">
+          <span class="hero-stat-value">1</span>
+          <span class="hero-stat-label">Filières</span>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input class="form-control" type="password" id="loginPassword" placeholder="••••••••" required>
+        <span class="hero-stat-sep"></span>
+        <div class="hero-stat">
+          <span class="hero-stat-value">40+</span>
+          <span class="hero-stat-label">Modules</span>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
-      </form>
-
-      <p class="auth-toggle">Pas encore de compte ? <a onclick="showRegister()">Créer un compte</a></p>
+        <span class="hero-stat-sep"></span>
+        <div class="hero-stat">
+          <span class="hero-stat-value">24/7</span>
+          <span class="hero-stat-label">Accès</span>
+        </div>
+      </div>
     </div>
 
-    <div id="registerForm" class="hidden">
-      <h2>Inscription</h2>
-      <p class="subtitle">Créez votre compte étudiant ENSATE</p>
-
-      <form onsubmit="register(event)">
-        <div class="form-group">
-          <label class="form-label">Nom complet</label>
-          <input class="form-control" type="text" id="regName" placeholder="Nom Prénom" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Adresse email</label>
-          <input class="form-control" type="email" id="regEmail" placeholder="prenom.nom@etu.uae.ac.ma" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input class="form-control" type="password" id="regPassword" placeholder="6 caractères minimum" required>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">S'inscrire</button>
-      </form>
-
-      <p class="auth-toggle">Déjà inscrit ? <a onclick="showLogin()">Se connecter</a></p>
+    <div class="hero-scroll" aria-hidden="true">
+      <span></span>
     </div>
-  </div>
-</div>
+  </section>
 
-<div id="toastContainer" class="toast-container"></div>
+  <section class="landing-info" id="aboutSection">
+    <div class="info-orbs" aria-hidden="true"></div>
+    <div class="info-content">
+      <span class="info-eyebrow">À propos</span>
+      <h2>Une expérience d'apprentissage <em>fluide</em></h2>
+      <p>Bientôt disponible — une suite d'outils pensés pour les étudiants ENSATE&nbsp;GI.</p>
 
-<script src="app.js"></script>
+      <div class="info-grid">
+        <div class="info-card">
+          <i class="fa-solid fa-bolt"></i>
+          <h3>Rapide</h3>
+          <p>Accédez instantanément à vos cours, où que vous soyez.</p>
+        </div>
+        <div class="info-card">
+          <i class="fa-solid fa-layer-group"></i>
+          <h3>Organisé</h3>
+          <p>Filières, modules et matières classés clairement.</p>
+        </div>
+        <div class="info-card">
+          <i class="fa-solid fa-medal"></i>
+          <h3>Motivant</h3>
+          <p>Un classement pour rester engagé chaque semaine.</p>
+        </div>
+      </div>
+
+      <div class="info-cta">
+        <h3>Prêt à commencer ?</h3>
+        <p>Rejoignez la plateforme et commencez à réviser dès aujourd'hui.</p>
+        <a class="btn btn-primary" href="auth.html">
+          Créer un compte <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="landing-footer">© 2026 ENSATE Preparation GI — Tous droits réservés</footer>
+
 <script>
-const API_BASE = "/api";
+  document.getElementById("learnMoreBtn").addEventListener("click", () => {
+    document.getElementById("aboutSection").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 
-function showRegister() {
-  document.getElementById("loginForm").classList.add("hidden");
-  document.getElementById("registerForm").classList.remove("hidden");
-}
-function showLogin() {
-  document.getElementById("registerForm").classList.add("hidden");
-  document.getElementById("loginForm").classList.remove("hidden");
-}
-
-async function register(e) {
-  e.preventDefault();
-  const fullName = document.getElementById("regName").value.trim();
-  const email = document.getElementById("regEmail").value.trim();
-  const password = document.getElementById("regPassword").value.trim();
-
-  if (!fullName || !email || !password) {
-    toastError("Veuillez remplir tous les champs.");
-    return;
-  }
-  if (!isValidUaeEmail(email)) {
-    toastError("Email invalide. Utilisez votre adresse @etu.uae.ac.ma.");
-    return;
-  }
-  if (password.length < 6) {
-    toastError("Le mot de passe doit contenir au moins 6 caractères.");
-    return;
-  }
-
-  const parts = fullName.split(/\s+/).filter(Boolean);
-  const nom = parts[0] || fullName;
-  const prenom = parts.slice(1).join(" ") || "Étudiant";
-
-  try {
-    const res = await fetch(`${API_BASE}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom, prenom, mail: email, password }),
+  /* ===== Cursor-tracked spotlight on info cards ===== */
+  document.querySelectorAll(".info-card").forEach((card) => {
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", ((e.clientX - r.left) / r.width) * 100 + "%");
+      card.style.setProperty("--my", ((e.clientY - r.top) / r.height) * 100 + "%");
     });
-    const payload = await res.json();
-    if (!res.ok) {
-      toastError(payload.message || "Erreur lors de l'inscription.");
-      return;
+  });
+
+  /* ===== Framer-style animated mesh-gradient shader ===== */
+  (function () {
+    const canvas = document.getElementById("shaderCanvas");
+    if (!canvas) return;
+    const gl = canvas.getContext("webgl", { antialias: true, premultipliedAlpha: false });
+    if (!gl) { canvas.style.display = "none"; return; }
+
+    const vert = `
+      attribute vec2 a;
+      void main() { gl_Position = vec4(a, 0.0, 1.0); }
+    `;
+
+    const frag = `
+      precision highp float;
+      uniform vec2 u_res;
+      uniform float u_t;
+
+      // soft Gaussian color blob
+      vec3 blob(vec2 uv, vec2 c, vec3 col, float r) {
+        float d = distance(uv, c) / r;
+        return col * exp(-d * d * 1.6);
+      }
+
+      float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+
+      void main() {
+        // square aspect coords centered at 0
+        vec2 uv = (gl_FragCoord.xy - 0.5 * u_res.xy) / min(u_res.x, u_res.y);
+        float t  = u_t * 0.18;
+
+        // base near-black canvas
+        vec3 col = vec3(0.020, 0.024, 0.055);
+
+        // four large drifting color blobs — Framer-mesh style
+        vec2 p1 = vec2(sin(t * 0.70)        * 0.55,        cos(t * 0.55)        * 0.45);
+        vec2 p2 = vec2(cos(t * 0.60 + 1.0)  * 0.65,        sin(t * 0.80 + 0.5)  * 0.40 + 0.15);
+        vec2 p3 = vec2(sin(t * 0.45 + 2.3)  * 0.55 - 0.20, cos(t * 0.65 + 1.7)  * 0.55);
+        vec2 p4 = vec2(cos(t * 0.85 + 3.1)  * 0.55,        sin(t * 0.55 + 2.4)  * 0.50 - 0.25);
+
+        col += blob(uv, p1, vec3(0.157, 0.302, 0.847), 0.95); // royal blue
+        col += blob(uv, p2, vec3(0.219, 0.741, 0.937), 0.85); // cyan
+        col += blob(uv, p3, vec3(0.541, 0.337, 0.929), 0.95); // violet
+        col += blob(uv, p4, vec3(0.925, 0.282, 0.600), 0.75); // magenta
+
+        // tonemap (Reinhard) so additive blobs roll off gracefully
+        col = col / (1.0 + col);
+        col = pow(col, vec3(0.85));
+
+        // soft vignette so edges sink into the dark
+        float vg = smoothstep(1.25, 0.20, length(uv));
+        col *= mix(0.55, 1.05, vg);
+
+        // very subtle grain to break gradient banding
+        float g = (hash(gl_FragCoord.xy + u_t) - 0.5) * 0.025;
+        col += g;
+
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `;
+
+    function compile(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(s)); gl.deleteShader(s); return null;
+      }
+      return s;
     }
-    toastSuccess("Inscription réussie. Vous pouvez vous connecter.");
-    showLogin();
-  } catch {
-    toastError("Impossible de contacter le serveur.");
-  }
-}
+    const vs = compile(gl.VERTEX_SHADER, vert);
+    const fs = compile(gl.FRAGMENT_SHADER, frag);
+    if (!vs || !fs) { canvas.style.display = "none"; return; }
 
-async function login(e) {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { canvas.style.display = "none"; return; }
+    gl.useProgram(prog);
 
-  if (!email || !password) {
-    toastError("Veuillez remplir tous les champs.");
-    return;
-  }
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+    const a = gl.getAttribLocation(prog, "a");
+    gl.enableVertexAttribArray(a);
+    gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
 
-  try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mail: email, password }),
-    });
-    const payload = await res.json();
-    if (!res.ok) {
-      toastError(payload.message || "Email ou mot de passe incorrect.");
-      return;
+    const uRes = gl.getUniformLocation(prog, "u_res");
+    const uT   = gl.getUniformLocation(prog, "u_t");
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const w = canvas.clientWidth  * dpr;
+      const h = canvas.clientHeight * dpr;
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w; canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+      gl.uniform2f(uRes, w, h);
     }
-    const data = payload.data || {};
-    localStorage.setItem("user", `${data.nom || ""} ${data.prenom || ""}`.trim() || data.mail || "Étudiant");
-    localStorage.setItem("userMail", data.mail || email);
-    localStorage.setItem("userStatus", data.status || "student");
-    toastSuccess("Bienvenue.");
-    setTimeout(() => window.location.href = "dashboard.html", 400);
-  } catch {
-    toastError("Impossible de contacter le serveur.");
-  }
-}
+    window.addEventListener("resize", resize);
+    resize();
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const start = performance.now();
+    function frame(now) {
+      const t = reduced ? 0 : (now - start) / 1000;
+      gl.uniform1f(uT, t);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      if (!reduced) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
 </script>
-
 </body>
 </html>
