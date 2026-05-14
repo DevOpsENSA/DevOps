@@ -9,6 +9,9 @@ services:
     volumes:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
+      #ici la premier ligne est chargé seuelemnt dans le premier demarage (creation des tableaux)
+      #puis les données vont de /var/lib/postgresql/data a pgdata et quand on allume va de pg data a /var/lib/postgresql/data :)
+      
     ports:
       - 5433:5432
   backend:
