@@ -23,7 +23,7 @@ variable "db_name" {
 
 variable "db_user" {
   description = "Utilisateur PostgreSQL"
-  default     = "admin"
+  default     = "ensate_user"    # ← changé (admin est réservé)
 }
 
 variable "aws_region" {
@@ -169,7 +169,7 @@ resource "aws_db_instance" "postgres" {
   allocated_storage = 20
 
   db_name  = var.db_name
-  username = var.db_user
+  username = var.db_user      # ← ensate_user
   password = var.db_password
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
