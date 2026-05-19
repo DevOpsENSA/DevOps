@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [SCRUM-6-FIX]
+    branches: [SCRUM-6-FIXE]
 
 jobs:
   # ══════════════════════════════
