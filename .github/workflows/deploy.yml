@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [master, SCRUM-6-Backend-test,SCRUM-6-FIX]
+    branches: [SCRUM-6-FIX]
 
 jobs:
   # ══════════════════════════════
