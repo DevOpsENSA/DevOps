@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ENSATE Préparation GI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="landing-page">
+<main class="landing-shell">
+
+  <header class="landing-top">
+    <span class="landing-mark">ENSATE / GI</span>
+    <a class="landing-top-link" href="auth.html">Se connecter</a>
+  </header>
+
+  <section class="landing-hero">
+    <p class="hero-eyebrow">Plateforme étudiante, Génie Informatique</p>
+
+    <h1 class="hero-title">
+      Préparation<br>
+      <em>GI.</em>
+    </h1>
+
+    <p class="hero-lede">
+      Cours, suivi et classement, pensés pour la révision sans friction.
+      Une seule plateforme pour avancer chaque semaine.
+    </p>
+
+    <div class="hero-actions">
+      <a class="ec-btn ec-btn-primary" href="auth.html">
+        Accéder à la plateforme
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <button type="button" class="ec-btn ec-btn-ghost" id="learnMoreBtn">
+        En savoir plus
+      </button>
+    </div>
+
+    <ul class="hero-meta">
+      <li><span>01</span>Cours structurés</li>
+      <li><span>02</span>Suivi de progression</li>
+      <li><span>03</span>Classement hebdomadaire</li>
+    </ul>
+  </section>
+
+  <hr class="landing-rule">
+
+  <section class="landing-about" id="aboutSection">
+    <p class="about-eyebrow">À propos</p>
+
+    <h2 class="about-title">
+      Une expérience d'apprentissage <em>fluide.</em>
+    </h2>
+
+    <p class="about-lede">
+      Bientôt disponible, une suite d'outils pensés pour les étudiants
+      ENSATE GI. Aucune surcharge, juste ce qu'il faut pour avancer.
+    </p>
+
+    <div class="about-grid">
+      <article class="about-item">
+        <h3>Rapide</h3>
+        <p>Accédez à vos cours instantanément, sans intermédiaire.</p>
+      </article>
+      <article class="about-item">
+        <h3>Organisé</h3>
+        <p>Filières, modules et matières classés sans ambiguïté.</p>
+      </article>
+      <article class="about-item">
+        <h3>Motivant</h3>
+        <p>Un classement transparent pour rester engagé chaque semaine.</p>
+      </article>
+    </div>
+
+    <div class="about-cta">
+      <h3>Prêt à commencer&nbsp;?</h3>
+      <a class="ec-btn ec-btn-primary" href="auth.html">
+        Créer un compte
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="landing-footer">
+  <span>© 2026 ENSATE Préparation GI</span>
+  <span class="landing-footer-meta">Tous droits réservés.</span>
+</footer>
+
+<script>
+  document.getElementById("learnMoreBtn").addEventListener("click", () => {
+    document.getElementById("aboutSection").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+</script>
+</body>
+</html>

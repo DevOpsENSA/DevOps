@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ENSATE Preparation GI</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="landing-page">
+<main>
+  <section class="landing-hero">
+    <div class="landing-content">
+      <h1>ENSATE PREPARATION GI</h1>
+      <p class="landing-subtitle"><i class="fa-solid fa-rocket"></i> Boostez vos révisions avec ENSATE Preparation GI et atteignez vos objectifs académiques plus efficacement.</p>
+      <div class="landing-actions">
+        <button class="btn btn-light" id="learnMoreBtn">En savoir plus</button>
+        <a class="btn btn-primary" href="auth.html">Accéder à l'authentification</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-info" id="aboutSection">
+    <h2>En savoir plus</h2>
+    <p>Bientôt disponible...</p>
+  </section>
+</main>
+
+<footer class="landing-footer">© 2026 ENSATE Preparation GI - Tous droits réservés</footer>
+
+<script>
+document.getElementById("learnMoreBtn").addEventListener("click", () => {
+  document.getElementById("aboutSection").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+</script>
+</body>
+</html>

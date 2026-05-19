@@ -1,0 +1,68 @@
+
+<style>
+.schema-wrap { display: flex; flex-direction: column; gap: 12px; padding: 8px 0; }
+.table-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+.table-header { padding: 8px 14px; background: var(--color-background-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 14px; font-weight: 500; color: var(--color-text-primary); letter-spacing: 0.01em; }
+.table-row { display: flex; align-items: center; gap: 8px; padding: 5px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+.table-row:last-child { border-bottom: none; }
+.col-name { color: var(--color-text-primary); min-width: 130px; }
+.col-name.pk { text-decoration: underline; text-underline-offset: 3px; }
+.badge { font-size: 11px; padding: 1px 7px; border-radius: 99px; font-weight: 500; }
+.badge-pk { background: #E6F1FB; color: #0C447C; }
+.badge-fk { background: #FAEEDA; color: #633806; }
+.col-type { color: var(--color-text-tertiary); font-size: 12px; margin-left: auto; }
+.col-ref { color: var(--color-text-secondary); font-size: 12px; font-style: italic; }
+</style>
+
+<div class="schema-wrap">
+
+  <div class="table-card">
+    <div class="table-header">ECOLE</div>
+    <div class="table-row"><span class="col-name pk">idEcole</span><span class="badge badge-pk">PK</span><span class="col-type">int</span></div>
+    <div class="table-row"><span class="col-name">nomEcole</span><span class="col-type">varchar</span></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">ADMIN</div>
+    <div class="table-row"><span class="col-name pk">idAdmin</span><span class="badge badge-pk">PK</span><span class="col-type">int</span></div>
+    <div class="table-row"><span class="col-name">name</span><span class="col-type">varchar · default 'Admin'</span></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">FILIERE</div>
+    <div class="table-row"><span class="col-name pk">idFiliere</span><span class="badge badge-pk">PK</span><span class="col-type">int</span></div>
+    <div class="table-row"><span class="col-name">nomFiliere</span><span class="col-type">varchar</span></div>
+    <div class="table-row"><span class="col-name">#idEcole</span><span class="badge badge-fk">FK</span><span class="col-ref">→ ECOLE.idEcole</span></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">SEMESTRE</div>
+    <div class="table-row"><span class="col-name pk">idSemestre</span><span class="badge badge-pk">PK</span><span class="col-type">int</span></div>
+    <div class="table-row"><span class="col-name">#idEcole</span><span class="badge badge-fk">FK</span><span class="col-ref">→ ECOLE.idEcole</span></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">COURS</div>
+    <div class="table-row"><span class="col-name pk">idCours</span><span class="badge badge-pk">PK</span><span class="col-type">int</span></div>
+    <div class="table-row"><span class="col-name">name</span><span class="col-type">varchar</span></div>
+    <div class="table-row"><span class="col-name">#idAdmin</span><span class="badge badge-fk">FK</span><span class="col-ref">→ ADMIN.idAdmin</span></div>
+    <div class="table-row"><span class="col-name">#idFiliere</span><span class="badge badge-fk">FK</span><span class="col-ref">→ FILIERE.idFiliere</span></div>
+    <div class="table-row"><span class="col-name">#idSemestre</span><span class="badge badge-fk">FK</span><span class="col-ref">→ SEMESTRE.idSemestre</span></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">ETUDIANT</div>
+    <div class="table-row"><span class="col-name pk">id</span><span class="badge badge-pk">PK</span><span class="col-type">int</span></div>
+    <div class="table-row"><span class="col-name">nom</span><span class="col-type">varchar</span></div>
+    <div class="table-row"><span class="col-name">prenom</span><span class="col-type">varchar</span></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">COMPTE</div>
+    <div class="table-row"><span class="col-name pk">mail</span><span class="badge badge-pk">PK</span><span class="col-type">varchar</span></div>
+    <div class="table-row"><span class="col-name">password</span><span class="col-type">varchar</span></div>
+    <div class="table-row"><span class="col-name">#idEtudiant</span><span class="badge badge-fk">FK</span><span class="col-ref">→ ETUDIANT.id</span></div>
+    <div class="table-row"><span class="col-name">status</span><span class="col-type">enum('admin','student')</span></div>
+  </div>
+
+</div>
