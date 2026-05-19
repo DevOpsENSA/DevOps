@@ -1,5 +1,4 @@
 name: CI/CD Pipeline
-
 on:
   push:
     branches: [SCRUM-6-FIXE]
@@ -50,13 +49,13 @@ jobs:
 
       - name: Build et Push Backend
         run: |
-          docker build -t ilyass324/backend:latest ./backend
-          docker push ilyass324/backend:latest
+          docker build -t omarelhorre/backend:latest ./backend
+          docker push omarelhorre/backend:latest
 
       - name: Build et Push Frontend
         run: |
-          docker build -t ilyass324/frontend:latest ./frontend
-          docker push ilyass324/frontend:latest
+          docker build -t omarelhorre/frontend:latest ./frontend
+          docker push omarelhorre/frontend:latest
 
   # ══════════════════════════════
   # JOB 3 : TERRAFORM AWS
