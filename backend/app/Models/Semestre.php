@@ -12,7 +12,7 @@ class Semestre extends Model
 
     protected $primaryKey = 'idSemestre';
 
-    protected $fillable = ['idEcole'];
+    protected $fillable = ['idSemestre', 'idEcole'];
 
     public function ecole(): BelongsTo
     {

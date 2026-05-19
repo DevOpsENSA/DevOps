@@ -6,6 +6,7 @@ use App\Models\Compte;
 use App\Models\Cours;
 use App\Models\Ecole;
 use App\Models\Filiere;
+use App\Models\Semestre;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,37 +30,31 @@ class LessonController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
-            'nomFiliere' => ['required_without:idFiliere', 'nullable', 'string', 'max:255'],
-            //'idFiliere' => ['required_without:nomFiliere', 'nullable', 'integer', 'exists:filieres,idFiliere'],
-            'idSemestre' => ['required', 'integer', 'exists:semestres,idSemestre'],
+            'nomFiliere' => ['required', 'string', 'max:255'],
+            'idSemestre' => ['required', 'integer', 'between:1,6'],
             'lesson_file' => ['nullable', 'file', 'max:10240'],
             'lesson_url' => ['nullable', 'url', 'max:2048'],
         ], [
             'name.required' => 'Le titre est obligatoire.',
             'idSemestre.required' => 'Le semestre est obligatoire.',
-            'idSemestre.exists' => 'Semestre introuvable.',
-            'nomFiliere.required_without' => 'La filière est obligatoire.',
-            'idFiliere.exists' => 'Filière introuvable.',
+            'idSemestre.between' => 'Semestre invalide.',
+            'nomFiliere.required' => 'La filière est obligatoire.',
             'lesson_url.url' => 'Le lien fourni n\'est pas valide.',
             'lesson_file.max' => 'Le fichier dépasse la taille autorisée (10 Mo).',
         ]);
 
+        // Either an uploaded file or a Drive link is required.
         if (! $request->hasFile('lesson_file') && empty($validated['lesson_url'])) {
             return response()->json([
                 'message' => 'Ajoutez un fichier ou un lien Google Drive.',
             ], 422);
         }
 
-   //     $idFiliere = $validated['idFiliere'] ?? null;
-
-  //      if (! $idFiliere) {
-    //        $idFiliere = $this->resolveFiliereByName(trim($validated['nomFiliere']));
-      //      if (! $idFiliere) {
-        //        return response()->json([
-     //               'message' => 'Aucune école configurée. Impossible de créer la filière.',
-       //         ], 422);
-         //   }
-      //  }
+        // Resolve (and self-heal) the referenced école / filière / semestre so the
+        // non-nullable foreign keys on `cours` can never blow up with a 500.
+        $idEcole = $this->resolveEcoleId();
+        $idFiliere = $this->resolveFiliereByName(trim($validated['nomFiliere']), $idEcole);
+        $idSemestre = $this->resolveSemestreId((int) $validated['idSemestre'], $idEcole);
 
         $storedPath = $request->hasFile('lesson_file')
             ? $request->file('lesson_file')->store('lessons', 'public')
@@ -70,7 +65,7 @@ class LessonController extends Controller
             'description' => $validated['description'] ?? null,
             'idEtudiant' => $adminCompte->idEtudiant,
             'idFiliere' => $idFiliere,
-            'idSemestre' => $validated['idSemestre'],
+            'idSemestre' => $idSemestre,
             'file_path' => $storedPath,
             'lesson_url' => $validated['lesson_url'] ?? null,
         ]);
@@ -105,28 +100,45 @@ class LessonController extends Controller
     }
 
     /**
-     * Resolve a filière by its name (case-insensitive).
-     * Auto-creates it (linked to the first available école) when missing.
-     * Returns null only when no école exists at all.
+     * Return the first école id, creating a default one when none exists.
      */
-    private function resolveFiliereByName(string $name): ?int
+    private function resolveEcoleId(): int
+    {
+        return (int) (Ecole::query()->value('idEcole')
+            ?? Ecole::create(['nomEcole' => 'ENSA'])->idEcole);
+    }
+
+    /**
+     * Resolve a filière by its name (case-insensitive),
+     * auto-creating it under the given école when missing.
+     */
+    private function resolveFiliereByName(string $name, int $idEcole): int
     {
         $filiere = Filiere::whereRaw('LOWER("nomFiliere") = ?', [mb_strtolower($name)])->first();
         if ($filiere) {
             return (int) $filiere->idFiliere;
         }
 
-        $idEcole = Ecole::query()->value('idEcole');
-        if (! $idEcole) {
-            return null;
-        }
-
-        $filiere = Filiere::create([
+        return (int) Filiere::create([
             'nomFiliere' => $name,
             'idEcole' => $idEcole,
-        ]);
+        ])->idFiliere;
+    }
 
-        return (int) $filiere->idFiliere;
+    /**
+     * Ensure the semestre row (1-6) exists, creating it under the given
+     * école when missing so the cours foreign key always resolves.
+     */
+    private function resolveSemestreId(int $idSemestre, int $idEcole): int
+    {
+        if (! Semestre::whereKey($idSemestre)->exists()) {
+            Semestre::create([
+                'idSemestre' => $idSemestre,
+                'idEcole' => $idEcole,
+            ]);
+        }
+
+        return $idSemestre;
     }
 
     private function formatLesson(Cours $cours): array

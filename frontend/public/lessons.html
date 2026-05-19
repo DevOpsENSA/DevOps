@@ -36,8 +36,10 @@
     <h2 class="section-title" style="margin-top:0">Ajouter une nouvelle leçon</h2>
     <div class="flex-row">
       <input id="lessonTitle" class="form-control" style="flex:1; min-width:240px" placeholder="Titre de la leçon">
-      <input id="lessonFiliere" class="form-control" style="flex:1; min-width:200px" placeholder="Filière (ex: Génie Informatique)" list="filiereOptions">
-      <datalist id="filiereOptions"></datalist>
+      <select id="lessonFiliere" class="form-control" style="flex:1; min-width:200px">
+        <option value="">Filière</option>
+        <option value="GI">GI</option>
+      </select>
       <select id="uploadSemester" class="form-control" style="max-width:180px">
         <option value="">Semestre</option>
         <option value="1">Semestre 1</option>
