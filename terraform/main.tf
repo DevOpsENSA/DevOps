@@ -212,19 +212,27 @@ resource "aws_instance" "app" {
     docker pull omarelhorre/backend:latest
     docker pull omarelhorre/frontend:latest
 
-    # Lancer le backend
+    # Lancer le backend avec DB_CONNECTION=pgsql
     docker run -d \
       --name backend \
       --network ensate-network \
       --restart always \
       -p 8080:80 \
+      -e DB_CONNECTION=pgsql \
       -e DB_HOST=${aws_db_instance.postgres.address} \
       -e DB_PORT=5432 \
       -e DB_DATABASE=${var.db_name} \
       -e DB_USERNAME=${var.db_user} \
       -e DB_PASSWORD=${var.db_password} \
       -e APP_ENV=production \
+      -e APP_KEY=base64:$(openssl rand -base64 32) \
       omarelhorre/backend:latest
+
+    # Attendre que le backend soit prêt
+    sleep 15
+
+    # Lancer les migrations
+    docker exec backend php artisan migrate --force
 
     # Lancer le frontend
     docker run -d \
