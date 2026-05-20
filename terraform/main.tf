@@ -186,18 +186,20 @@ resource "aws_db_instance" "postgres" {
 # ══════════════════════════════
 resource "aws_instance" "app" {
   ami                    = "ami-0302f42a44bf53a45"
-  instance_type          = "t3.micro"          # ← corrigé t2 → t3
+  instance_type          = "t3.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.app.id]
 
   user_data = <<-EOF
     #!/bin/bash
-    apt-get update -y
-    apt-get install -y docker.io
+    # Amazon Linux 2023 utilise dnf
+    dnf update -y
+    dnf install -y docker
     systemctl start docker
     systemctl enable docker
 
-    sleep 30
+    # Attendre que la DB soit prête
+    sleep 60
 
     docker run -d \
       --name backend \
@@ -209,13 +211,13 @@ resource "aws_instance" "app" {
       -e DB_USERNAME=${var.db_user} \
       -e DB_PASSWORD=${var.db_password} \
       -e APP_ENV=production \
-      ilyass324/backend:latest
+      omarelhorre/backend:latest
 
     docker run -d \
       --name frontend \
       --restart always \
       -p 4200:80 \
-      ilyass324/frontend:latest
+      omarelhorre/frontend:latest
   EOF
 
   tags = { Name = "ensate-server" }
