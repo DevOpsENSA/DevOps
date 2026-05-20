@@ -200,20 +200,22 @@ resource "aws_instance" "app" {
     dnf install -y docker
     systemctl start docker
     systemctl enable docker
-
-    # Ajouter ec2-user au groupe docker
     usermod -aG docker ec2-user
 
     # Attendre que la DB RDS soit prête
     sleep 60
 
+    # Créer un réseau Docker partagé
+    docker network create ensate-network
+
     # Pull des images
     docker pull omarelhorre/backend:latest
     docker pull omarelhorre/frontend:latest
 
-    # Lancer les containers
+    # Lancer le backend
     docker run -d \
       --name backend \
+      --network ensate-network \
       --restart always \
       -p 8080:80 \
       -e DB_HOST=${aws_db_instance.postgres.address} \
@@ -224,8 +226,10 @@ resource "aws_instance" "app" {
       -e APP_ENV=production \
       omarelhorre/backend:latest
 
+    # Lancer le frontend
     docker run -d \
       --name frontend \
+      --network ensate-network \
       --restart always \
       -p 4200:80 \
       omarelhorre/frontend:latest
