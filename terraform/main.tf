@@ -192,15 +192,25 @@ resource "aws_instance" "app" {
 
   user_data = <<-EOF
     #!/bin/bash
-    # Amazon Linux 2023 utilise dnf
+    exec > /var/log/user-data.log 2>&1
+
+    # Amazon Linux 2023
     dnf update -y
     dnf install -y docker
     systemctl start docker
     systemctl enable docker
 
-    # Attendre que la DB soit prête
+    # Ajouter ec2-user au groupe docker
+    usermod -aG docker ec2-user
+
+    # Attendre que la DB RDS soit prête
     sleep 60
 
+    # Pull des images
+    docker pull omarelhorre/backend:latest
+    docker pull omarelhorre/frontend:latest
+
+    # Lancer les containers
     docker run -d \
       --name backend \
       --restart always \
