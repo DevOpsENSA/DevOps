@@ -16,7 +16,7 @@ services:
       - 5433:5432
   backend:
     build: ./backend 
-    image: omarelhorre/backenddevops:v1
+    image: omarelhorre/backenddevops:latest
     ports:
       - "8080:80"
     depends_on:
@@ -30,7 +30,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-}
   frontend:
     build: ./frontend
-    image: omarelhorre/frontenddevops:v1
+    image: omarelhorre/frontenddevops:latest
     ports:
       - "4200:80"
     depends_on:
