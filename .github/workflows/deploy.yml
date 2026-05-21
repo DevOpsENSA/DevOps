@@ -1,36 +1,54 @@
+
 name: CI/CD Pipeline
 on:
   push:
     branches: [SCRUM-6-FIXE]
-
+ 
 jobs:
   # ══════════════════════════════
   # JOB 1 : TESTS
   # ══════════════════════════════
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: plateformEtudiant_test
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+ 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
           extensions: pdo, pdo_pgsql
-
+ 
       - name: Install dependencies
         run: cd backend && composer install
-
+ 
       - name: Copy .env
         run: |
           cd backend
           cp .env.example .env
           php artisan key:generate
-
+ 
+      - name: Run migrations
+        run: cd backend && php artisan migrate --force
+ 
       - name: Run tests
         run: cd backend && php artisan test --testdox
-
+ 
   # ══════════════════════════════
   # JOB 2 : BUILD DOCKER
   # ══════════════════════════════
@@ -40,23 +58,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+ 
       - name: Login DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
+ 
       - name: Build et Push Backend
         run: |
           docker build -t omarelhorre/backend:latest ./backend
           docker push omarelhorre/backend:latest
-
+ 
       - name: Build et Push Frontend
         run: |
           docker build -t omarelhorre/frontend:latest ./frontend
           docker push omarelhorre/frontend:latest
-
+ 
   # ══════════════════════════════
   # JOB 3 : DEPLOY SUR EC2
   # ══════════════════════════════
@@ -71,36 +89,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Pull latest images
-            docker pull omarelhorre/backend:latest
-            docker pull omarelhorre/frontend:latest
-
-            # Redeploy backend
-            docker stop backend || true
-            docker rm   backend || true
-            docker run -d \
-              --name backend \
-              --network ensate-network \
-              --restart always \
-              -p 8080:80 \
-              -e DB_CONNECTION=pgsql \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_PORT=5432 \
-              -e DB_DATABASE=${{ secrets.DB_NAME }} \
-              -e DB_USERNAME=${{ secrets.DB_USER }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e APP_ENV=production \
-              -e APP_KEY=base64:$(openssl rand -base64 32) \
-              omarelhorre/backend:latest
-
-            docker exec backend php artisan migrate --force
-
-            # Redeploy frontend
-            docker stop frontend || true
-            docker rm   frontend || true
-            docker run -d \
-              --name frontend \
-              --network ensate-network \
-              --restart always \
-              -p 4200:80 \
-              omarelhorre/frontend:latest
+            cd /home/ec2-user/app
+            docker-compose pull
+            docker-compose up -d
+            docker-compose exec -T backend php artisan migrate --force
