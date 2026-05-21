@@ -138,14 +138,16 @@ DB_DATABASE=plateformEtudiant
 DB_USERNAME=admin
 DB_PASSWORD=${var.db_password}
 DOTENV
-cat /home/ec2-user/app/.env
 
-echo "STEP 7: docker-compose up"
+echo "STEP 7: docker-compose pull"
 cd /home/ec2-user/app
+/usr/local/bin/docker-compose pull
+
+echo "STEP 8: docker-compose up"
 /usr/local/bin/docker-compose up -d
 /usr/local/bin/docker-compose ps
 
-echo "STEP 8: wait and migrate"
+echo "STEP 9: wait and migrate"
 sleep 60
 /usr/local/bin/docker-compose exec -T backend php artisan migrate --force
 
