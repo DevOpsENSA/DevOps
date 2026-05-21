@@ -67,13 +67,13 @@ jobs:
  
       - name: Build et Push Backend
         run: |
-          docker build -t omarelhorre/backend:latest ./backend
-          docker push omarelhorre/backend:latest
+          docker build -t omarelhorre/frontenddevops:latest ./backend
+          docker push omarelhorre/frontenddevops:latest
  
       - name: Build et Push Frontend
         run: |
-          docker build -t omarelhorre/frontend:latest ./frontend
-          docker push omarelhorre/frontend:latest
+          docker build -t omarelhorre/frontenddevops:latest ./frontend
+          docker push omarelhorre/frontenddevops:latest
  
   # ══════════════════════════════
   # JOB 3 : DEPLOY SUR EC2
