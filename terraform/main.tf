@@ -16,14 +16,9 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "db_name" {
-  description = "Nom de la base de données"
-  default     = "plateformEtudiant"
-}
-
-variable "db_user" {
-  description = "Utilisateur PostgreSQL"
-  default     = "ensate_user"
+variable "github_repo" {
+  description = "URL du repo GitHub ex: https://github.com/user/repo.git"
+  type        = string
 }
 
 variable "aws_region" {
@@ -39,7 +34,7 @@ provider "aws" {
 }
 
 # ══════════════════════════════
-# RESEAU VPC
+# RESEAU
 # ══════════════════════════════
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -54,20 +49,6 @@ resource "aws_subnet" "public" {
   availability_zone       = "eu-west-3a"
   map_public_ip_on_launch = true
   tags = { Name = "ensate-public-subnet" }
-}
-
-resource "aws_subnet" "db_1" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "eu-west-3a"
-  tags = { Name = "ensate-db-subnet-1" }
-}
-
-resource "aws_subnet" "db_2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.3.0/24"
-  availability_zone = "eu-west-3b"
-  tags = { Name = "ensate-db-subnet-2" }
 }
 
 resource "aws_internet_gateway" "igw" {
@@ -97,7 +78,7 @@ resource "aws_security_group" "app" {
   vpc_id = aws_vpc.main.id
 
   ingress {
-    description = "Frontend Angular"
+    description = "Frontend"
     from_port   = 4200
     to_port     = 4200
     protocol    = "tcp"
@@ -105,7 +86,7 @@ resource "aws_security_group" "app" {
   }
 
   ingress {
-    description = "Backend Laravel"
+    description = "Backend"
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
@@ -130,57 +111,6 @@ resource "aws_security_group" "app" {
   tags = { Name = "ensate-app-sg" }
 }
 
-resource "aws_security_group" "db" {
-  name   = "ensate-db-sg"
-  vpc_id = aws_vpc.main.id
-
-  ingress {
-    description     = "PostgreSQL depuis EC2"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.app.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = { Name = "ensate-db-sg" }
-}
-
-# ══════════════════════════════
-# BASE DE DONNEES RDS
-# ══════════════════════════════
-resource "aws_db_subnet_group" "main" {
-  name       = "ensate-db-subnet-group"
-  subnet_ids = [aws_subnet.db_1.id, aws_subnet.db_2.id]
-  tags       = { Name = "ensate-db-subnet-group" }
-}
-
-resource "aws_db_instance" "postgres" {
-  identifier        = "ensate-db"
-  engine            = "postgres"
-  engine_version    = "16"
-  instance_class    = "db.t3.micro"
-  allocated_storage = 20
-
-  db_name  = var.db_name
-  username = var.db_user
-  password = var.db_password
-
-  db_subnet_group_name   = aws_db_subnet_group.main.name
-  vpc_security_group_ids = [aws_security_group.db.id]
-
-  skip_final_snapshot = true
-  publicly_accessible = false
-
-  tags = { Name = "ensate-postgres" }
-}
-
 # ══════════════════════════════
 # SERVEUR EC2
 # ══════════════════════════════
@@ -197,53 +127,38 @@ resource "aws_instance" "app" {
 
     # Amazon Linux 2023
     dnf update -y
-    dnf install -y docker
+    dnf install -y docker git
     systemctl start docker
     systemctl enable docker
     usermod -aG docker ec2-user
 
-    # Attendre que la DB RDS soit prête
-    sleep 60
+    # Install docker-compose
+    curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
 
-    # Créer un réseau Docker partagé
-    docker network create ensate-network
+    # Clone le repo (contient le docker-compose.yml)
+    git clone ${var.github_repo} /home/ec2-user/app
 
-    # Pull des images
-    docker pull omarelhorre/backend:latest
-    docker pull omarelhorre/frontend:latest
+    # Ecrire le .env — docker-compose le lit automatiquement
+    cat > /home/ec2-user/app/.env << ENVFILE
+DB_CONNECTION=pgsql
+DB_HOST=db
+DB_PORT=5432
+DB_DATABASE=plateformEtudiant
+DB_USERNAME=admin
+DB_PASSWORD=${var.db_password}
+ENVFILE
 
-    # Lancer le backend avec DB_CONNECTION=pgsql
-    docker run -d \
-      --name backend \
-      --network ensate-network \
-      --restart always \
-      -p 8080:80 \
-      -e DB_CONNECTION=pgsql \
-      -e DB_HOST=${aws_db_instance.postgres.address} \
-      -e DB_PORT=5432 \
-      -e DB_DATABASE=${var.db_name} \
-      -e DB_USERNAME=${var.db_user} \
-      -e DB_PASSWORD=${var.db_password} \
-      -e APP_ENV=production \
-      -e APP_KEY=base64:$(openssl rand -base64 32) \
-      omarelhorre/backend:latest
+    # Lancer tous les conteneurs
+    cd /home/ec2-user/app
+    docker-compose up -d
 
-    # Attendre que le backend soit prêt
-    sleep 15
-
-    # Lancer les migrations
-    docker exec backend php artisan migrate --force
-
-    # Lancer le frontend
-    docker run -d \
-      --name frontend \
-      --network ensate-network \
-      --restart always \
-      -p 4200:80 \
-      omarelhorre/frontend:latest
+    # Attendre que la DB soit prête puis migrer
+    sleep 30
+    docker-compose exec -T backend php artisan migrate --force
   EOF
 
-  tags = { Name = "ensate-server" }
+  tags = { Name = "ensate-server-fixed" }
 }
 
 # ══════════════════════════════
@@ -257,11 +172,6 @@ output "frontend_url" {
 output "backend_url" {
   value       = "http://${aws_instance.app.public_ip}:8080"
   description = "URL du Backend"
-}
-
-output "database_endpoint" {
-  value       = aws_db_instance.postgres.address
-  description = "Endpoint PostgreSQL"
 }
 
 output "server_ip" {
