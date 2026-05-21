@@ -67,8 +67,8 @@ jobs:
  
       - name: Build et Push Backend
         run: |
-          docker build -t omarelhorre/frontenddevops:latest ./backend
-          docker push omarelhorre/frontenddevops:latest
+          docker build -t omarelhorre/backendenddevops:latest ./backend
+          docker push omarelhorre/backendenddevops:latest
  
       - name: Build et Push Frontend
         run: |
