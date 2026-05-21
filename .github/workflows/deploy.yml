@@ -94,7 +94,7 @@ jobs:
             cd /home/ec2-user/app
             docker-compose pull
             docker-compose up -d
-            docker-compose exec -T backend php artisan migrate --force || force
+            docker-compose exec -T backend php artisan migrate --force || true
 
   zap:
     runs-on: ubuntu-latest
